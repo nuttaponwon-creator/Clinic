@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Pet Clinic{% endblock %} — ระบบจัดการคลินิกสัตว์เลี้ยง</title>
+  <meta name="description" content="ระบบจัดการคลินิกรักษาสัตว์เลี้ยง Pet Clinic Management System">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+  <!-- ===== Sidebar ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">🐾</div>
+      <div class="brand-text">
+        Pet Clinic
+        <small>ระบบจัดการคลินิก</small>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">เมนูหลัก</div>
+
+      <a href="{% url 'dashboard' %}" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+        <i class="fas fa-th-large"></i>
+        แดชบอร์ด
+      </a>
+
+      <a href="{% url 'pet_list' %}" class="nav-item {% if active_page == 'pets' %}active{% endif %}">
+        <i class="fas fa-paw"></i>
+        สัตว์เลี้ยง
+      </a>
+
+      <a href="{% url 'owner_list' %}" class="nav-item {% if active_page == 'owners' %}active{% endif %}">
+        <i class="fas fa-users"></i>
+        เจ้าของสัตว์
+      </a>
+
+      <a href="{% url 'appointment_list' %}" class="nav-item {% if active_page == 'appointments' %}active{% endif %}">
+        <i class="fas fa-calendar-check"></i>
+        นัดหมาย
+      </a>
+
+      <div class="nav-label">ข้อมูลระบบ</div>
+
+      <a href="{% url 'vet_list' %}" class="nav-item {% if active_page == 'vets' %}active{% endif %}">
+        <i class="fas fa-user-md"></i>
+        สัตวแพทย์
+      </a>
+    </nav>
+  </aside>
+
+  <!-- ===== Main Content ===== -->
+  <div class="main-content">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-title">
+        <h1>{% block page_title %}แดชบอร์ด{% endblock %}</h1>
+        <p>{% block page_subtitle %}ภาพรวมข้อมูลคลินิก{% endblock %}</p>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="page-content">
+
+      <!-- Alert Messages -->
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'danger' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

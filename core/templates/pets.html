@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}จัดการสัตว์เลี้ยง{% endblock %}
+{% block page_title %}จัดการสัตว์เลี้ยง{% endblock %}
+{% block page_subtitle %}ข้อมูลสัตว์เลี้ยงทั้งหมดในระบบ{% endblock %}
+
+{% block content %}
+
+<div class="data-card">
+  <div class="data-card-header">
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchPets" placeholder="ค้นหาชื่อสัตว์เลี้ยง, เจ้าของ, สายพันธุ์..." onkeyup="filterTable('searchPets', 'petsTable')">
+      </div>
+    </div>
+    <a href="{% url 'pet_add' %}" class="btn btn-primary">
+      <i class="fas fa-plus"></i> เพิ่มสัตว์เลี้ยง
+    </a>
+  </div>
+  <div class="table-responsive">
+    <table id="petsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>ชื่อ</th>
+          <th>ชนิด</th>
+          <th>สายพันธุ์</th>
+          <th>เพศ</th>
+          <th>น้ำหนัก (กก.)</th>
+          <th>เจ้าของ</th>
+          <th>เบอร์โทร</th>
+          <th>สัตวแพทย์หลัก</th>
+          <th>สถานะ</th>
+          <th>จัดการ</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pet in pets %}
+        <tr>
+          <td>{{ pet.pet_id }}</td>
+          <td><strong>{{ pet.pet_name }}</strong></td>
+          <td>{{ pet.species }}</td>
+          <td>{{ pet.breed }}</td>
+          <td>
+            {% if pet.gender == 'M' %}
+              <span class="gender-male"><i class="fas fa-mars"></i> ผู้</span>
+            {% elif pet.gender == 'F' %}
+              <span class="gender-female"><i class="fas fa-venus"></i> เมีย</span>
+            {% else %}
+              <span class="gender-unknown"><i class="fas fa-genderless"></i> ไม่ระบุ</span>
+            {% endif %}
+          </td>
+          <td>{{ pet.weight_kg|default:"-" }}</td>
+          <td>{{ pet.owner_name }}</td>
+          <td>{{ pet.owner_phone }}</td>
+          <td>{{ pet.primary_vet_name|default:"ยังไม่กำหนด" }}</td>
+          <td>
+            {% if pet.is_active %}
+              <span class="badge badge-success">ใช้งาน</span>
+            {% else %}
+              <span class="badge badge-danger">ปิดใช้งาน</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'pet_edit' pet.pet_id %}" class="btn btn-outline btn-icon" title="แก้ไข">
+              <i class="fas fa-edit"></i>
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="11">
+            <div class="empty-state">
+              <i class="fas fa-paw"></i>
+              <p>ยังไม่มีข้อมูลสัตว์เลี้ยง</p>
+              <a href="{% url 'pet_add' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> เพิ่มสัตว์เลี้ยงตัวแรก
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterTable(inputId, tableId) {
+  const filter = document.getElementById(inputId).value.toLowerCase();
+  const rows = document.getElementById(tableId).querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(filter) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}นัดหมาย{% endblock %}
+{% block page_title %}จัดการนัดหมาย{% endblock %}
+{% block page_subtitle %}นัดหมายที่กำลังจะมาถึง{% endblock %}
+
+{% block content %}
+
+<div class="data-card">
+  <div class="data-card-header">
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchAppts" placeholder="ค้นหาชื่อสัตว์, เจ้าของ, หมอ..." onkeyup="filterTable('searchAppts', 'apptsTable')">
+      </div>
+    </div>
+    <a href="{% url 'appointment_add' %}" class="btn btn-primary">
+      <i class="fas fa-plus"></i> สร้างนัดหมาย
+    </a>
+  </div>
+  <div class="table-responsive">
+    <table id="apptsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>วัน-เวลา</th>
+          <th>สัตว์เลี้ยง</th>
+          <th>ชนิด</th>
+          <th>เจ้าของ</th>
+          <th>เบอร์โทร</th>
+          <th>สัตวแพทย์</th>
+          <th>เหตุผล</th>
+          <th>สถานะ</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments %}
+        <tr>
+          <td>{{ appt.appt_id }}</td>
+          <td><strong>{{ appt.appt_datetime|date:"d/m/Y H:i" }}</strong></td>
+          <td>{{ appt.pet_name }}</td>
+          <td>{{ appt.species }}</td>
+          <td>{{ appt.owner_name }}</td>
+          <td>{{ appt.owner_phone }}</td>
+          <td>{{ appt.vet_name }}</td>
+          <td>{{ appt.reason|default:"-"|truncatechars:30 }}</td>
+          <td><span class="badge badge-info">{{ appt.status }}</span></td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9">
+            <div class="empty-state">
+              <i class="fas fa-calendar-alt"></i>
+              <p>ยังไม่มีนัดหมายที่กำลังจะมาถึง</p>
+              <a href="{% url 'appointment_add' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> สร้างนัดหมายแรก
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterTable(inputId, tableId) {
+  const filter = document.getElementById(inputId).value.toLowerCase();
+  const rows = document.getElementById(tableId).querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(filter) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

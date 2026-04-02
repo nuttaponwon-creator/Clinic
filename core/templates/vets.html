@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}สัตวแพทย์{% endblock %}
+{% block page_title %}ข้อมูลสัตวแพทย์{% endblock %}
+{% block page_subtitle %}ข้อมูลสัตวแพทย์และภาระงานทั้งหมด{% endblock %}
+
+{% block content %}
+
+<div class="data-card">
+  <div class="data-card-header">
+    <h2><i class="fas fa-user-md"></i> รายชื่อสัตวแพทย์</h2>
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchVets" placeholder="ค้นหาชื่อ, ความเชี่ยวชาญ..." onkeyup="filterTable('searchVets', 'vetsTable')">
+      </div>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table id="vetsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>ชื่อ-นามสกุล</th>
+          <th>ความเชี่ยวชาญ</th>
+          <th>จำนวนสัตว์ดูแล</th>
+          <th>สถานะ</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for vet in vets %}
+        <tr>
+          <td>{{ vet.vet_id }}</td>
+          <td><strong>{{ vet.vet_name }}</strong></td>
+          <td>{{ vet.specialization|default:"-" }}</td>
+          <td>
+            <span class="badge badge-purple">
+              <i class="fas fa-paw"></i> {{ vet.active_pet_count }} ตัว
+            </span>
+          </td>
+          <td>
+            {% if vet.is_active %}
+              <span class="badge badge-success">ปฏิบัติงาน</span>
+            {% else %}
+              <span class="badge badge-danger">หยุดงาน</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5">
+            <div class="empty-state">
+              <i class="fas fa-user-md"></i>
+              <p>ยังไม่มีข้อมูลสัตวแพทย์</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterTable(inputId, tableId) {
+  const filter = document.getElementById(inputId).value.toLowerCase();
+  const rows = document.getElementById(tableId).querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(filter) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',  # Django REST Framework
     'core',
 ]
 
@@ -55,7 +56,7 @@ ROOT_URLCONF = 'myclinic.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'core' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,12 +79,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'mssql',
         'NAME': 'PetClinicDB',
-        'HOST': 'localhost', # ⚠️ เปลี่ยนเป็นชื่อ Server Name ตอนที่คุณล็อคอินเข้าโปรแกรม SSMS (เช่น 'localhost\SQLEXPRESS' หรือชื่อคอมพิวเตอร์)
-        'USER': '',          # ถ้าตอนเข้า SSMS คุณใช้ Windows Authentication ให้ปล่อยว่างไว้แบบนี้เลยครับ
-        'PASSWORD': '',      # ปล่อยว่างไว้เช่นกันถ้าใช้ Windows Auth
+        'HOST': 'CORONELLIF\\SQLEXPRESS',  # ชื่อ SQL Server ของคุณ
+        'USER': 'sa',              # ⚠️ เปลี่ยนเป็น username ของคุณ
+        'PASSWORD': '123456789',
         'OPTIONS': {
-            'driver': 'ODBC Driver 17 for SQL Server', # เช็คให้ชัวร์ว่าเครื่องมี Driver ตัวนี้ (ปกติ SSMS จะลงมาให้แล้ว)
-            'extra_params': 'TrustServerCertificate=yes;', # ป้องกัน Error เรื่อง SSL ในเครื่องตัวเอง
+            'driver': 'ODBC Driver 17 for SQL Server',
+            'extra_params': 'TrustServerCertificate=yes;',
         },
     }
 }
@@ -110,9 +111,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'th'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Bangkok'
 
 USE_I18N = True
 
@@ -123,6 +124,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'core' / 'static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
