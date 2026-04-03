@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}มังคุด สัตวแพทย์{% endblock %} — Mangkud Veterinary Clinic</title>
+  <meta name="description" content="คลินิกรักษาสัตว์เลี้ยง มังคุด สัตวแพทย์ บริการดูแลสุขภาพสัตว์เลี้ยงครบวงจร">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/public.css' %}">
+</head>
+<body>
+
+  <!-- ===== Navbar ===== -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="{% url 'home' %}" class="nav-brand">
+        <img src="{% static 'images/logo.png' %}" alt="Mangkud Vet" class="nav-logo">
+        <div>
+          <span class="nav-brand-name">Mangkud Vet</span>
+          <span class="nav-brand-sub">มังคุด สัตวแพทย์</span>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="{% url 'home' %}" class="nav-link {% if active_page == 'home' %}active{% endif %}">หน้าแรก</a>
+        <a href="{% url 'public_services' %}" class="nav-link {% if active_page == 'services' %}active{% endif %}">บริการ</a>
+        <a href="{% url 'public_booking' %}" class="nav-link btn-booking">
+          <i class="fas fa-calendar-plus"></i> จองคิว
+        </a>
+      </div>
+      <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  {% block content %}{% endblock %}
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h3>Mangkud Veterinary Clinic</h3>
+          <p>มังคุด สัตวแพทย์ — ดูแลสัตว์เลี้ยงของคุณอย่างอบอุ่น ด้วยมาตรฐานการแพทย์ที่เชื่อถือได้</p>
+        </div>
+        <div class="footer-col">
+          <h4>ติดต่อเรา</h4>
+          <p><i class="fas fa-phone"></i> 02-xxx-xxxx</p>
+          <p><i class="fas fa-envelope"></i> info@mangkudvet.com</p>
+          <p><i class="fas fa-globe"></i> www.mangkudvet.com</p>
+        </div>
+        <div class="footer-col">
+          <h4>เวลาทำการ</h4>
+          <p>จันทร์ - เสาร์: 09:00 - 20:00</p>
+          <p>อาทิตย์: 10:00 - 17:00</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Mangkud Veterinary Clinic — Est. 2024</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Navbar scroll effect -->
+  <script>
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    });
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

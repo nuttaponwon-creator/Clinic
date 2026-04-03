@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}จัดการวัคซีน{% endblock %}
+{% block page_title %}จัดการวัคซีน{% endblock %}
+{% block page_subtitle %}รายการวัคซีน สต็อก และประวัติการฉีด{% endblock %}
+
+{% block content %}
+
+<!-- ===== สต็อกวัคซีน ===== -->
+<div class="data-card">
+  <div class="data-card-header">
+    <h2><i class="fas fa-syringe"></i> รายการวัคซีนในสต็อก</h2>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchVaccine" placeholder="ค้นหาวัคซีน..." onkeyup="filterTable('searchVaccine', 'vaccineTable')">
+      </div>
+      <button class="btn btn-primary" onclick="toggleSection('addVaccineSection')">
+        <i class="fas fa-plus"></i> เพิ่มวัคซีนใหม่
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== ฟอร์มเพิ่มวัคซีนใหม่ (ซ่อนอยู่) ===== -->
+  <div id="addVaccineSection" class="collapsible-section" style="display:none;">
+    <div style="padding: 24px; border-bottom: 2px solid #F1F3F5; background: #FAFBFE;">
+      <h3 style="font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 16px;">
+        <i class="fas fa-plus-circle"></i> เพิ่มวัคซีนชนิดใหม่
+      </h3>
+      <form method="POST" action="{% url 'vaccine_add' %}">
+        {% csrf_token %}
+        <div class="form-grid">
+          <div class="form-group">
+            <label>ชื่อวัคซีน <span class="required">*</span></label>
+            <input type="text" name="name" class="form-control" placeholder="เช่น Rabies Vaccine" required>
+          </div>
+          <div class="form-group">
+            <label>ผู้ผลิต</label>
+            <input type="text" name="manufacturer" class="form-control" placeholder="เช่น Zoetis, MSD">
+          </div>
+          <div class="form-group">
+            <label>โรคที่ป้องกัน</label>
+            <input type="text" name="target_disease" class="form-control" placeholder="เช่น พิษสุนัขบ้า">
+          </div>
+          <div class="form-group">
+            <label>ระยะเวลาคุ้มครอง (เดือน)</label>
+            <input type="number" name="validity_months" class="form-control" placeholder="เช่น 12">
+          </div>
+          <div class="form-group">
+            <label>จำนวนเริ่มต้น <span class="required">*</span></label>
+            <input type="number" name="stock_qty" class="form-control" value="0" min="0" required>
+          </div>
+          <div class="form-group">
+            <label>อุณหภูมิเก็บรักษา</label>
+            <input type="text" name="storage_temp" class="form-control" placeholder="เช่น 2-8°C">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> บันทึกวัคซีนใหม่
+          </button>
+          <button type="button" class="btn btn-outline" onclick="toggleSection('addVaccineSection')">ยกเลิก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== ตารางวัคซีน ===== -->
+  <div class="table-responsive">
+    <table id="vaccineTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>ชื่อวัคซีน</th>
+          <th>ผู้ผลิต</th>
+          <th>โรคที่ป้องกัน</th>
+          <th>คุ้มครอง</th>
+          <th>อุณหภูมิ</th>
+          <th>สต็อก</th>
+          <th>สถานะ</th>
+          <th>เติมสต็อก</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in vaccines %}
+        <tr>
+          <td>{{ v.vaccine_id }}</td>
+          <td><strong>{{ v.name }}</strong></td>
+          <td>{{ v.manufacturer|default:"-" }}</td>
+          <td>{{ v.target_disease|default:"-" }}</td>
+          <td>{% if v.validity_months %}{{ v.validity_months }} เดือน{% else %}-{% endif %}</td>
+          <td>{{ v.storage_temp|default:"-" }}</td>
+          <td>
+            {% if v.stock_qty <= 5 %}
+              <span class="badge badge-danger"><i class="fas fa-exclamation-triangle"></i> {{ v.stock_qty }}</span>
+            {% elif v.stock_qty <= 20 %}
+              <span class="badge badge-warning">{{ v.stock_qty }}</span>
+            {% else %}
+              <span class="badge badge-success">{{ v.stock_qty }}</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if v.is_active %}
+              <span class="badge badge-success">ใช้งาน</span>
+            {% else %}
+              <span class="badge badge-danger">ปิดใช้งาน</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="POST" action="{% url 'vaccine_restock' %}" style="display:flex; gap:6px; align-items:center;">
+              {% csrf_token %}
+              <input type="hidden" name="vaccine_id" value="{{ v.vaccine_id }}">
+              <input type="number" name="qty" class="form-control" style="width:80px; padding:6px 10px; font-size:13px;" value="10" min="1">
+              <button type="submit" class="btn btn-success btn-sm" title="เติมสต็อก">
+                <i class="fas fa-plus"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9">
+            <div class="empty-state">
+              <i class="fas fa-syringe"></i>
+              <p>ยังไม่มีข้อมูลวัคซีน</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== บันทึกฉีดวัคซีน ===== -->
+<div class="data-card">
+  <div class="data-card-header">
+    <h2><i class="fas fa-file-medical"></i> บันทึกฉีดวัคซีน</h2>
+  </div>
+  <div style="padding: 24px;">
+    <form method="POST" action="{% url 'vaccine_record_add' %}">
+      {% csrf_token %}
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>สัตว์เลี้ยง <span class="required">*</span></label>
+          <select name="pet_id" class="form-control" required>
+            <option value="">-- เลือกสัตว์เลี้ยง --</option>
+            {% for pet in pets %}
+              <option value="{{ pet.pet_id }}">{{ pet.name }} ({{ pet.owner_name }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>วัคซีน <span class="required">*</span></label>
+          <select name="vaccine_id" class="form-control" required>
+            <option value="">-- เลือกวัคซีน --</option>
+            {% for v in active_vaccines %}
+              <option value="{{ v.vaccine_id }}">{{ v.name }} (คงเหลือ {{ v.stock_qty }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>สัตวแพทย์ผู้ฉีด <span class="required">*</span></label>
+          <select name="vet_id" class="form-control" required>
+            <option value="">-- เลือกสัตวแพทย์ --</option>
+            {% for vet in vets %}
+              <option value="{{ vet.vet_id }}">{{ vet.first_name }} {{ vet.last_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>วันที่ฉีด <span class="required">*</span></label>
+          <input type="date" name="given_date" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label>วันครบกำหนดฉีดครั้งถัดไป</label>
+          <input type="date" name="next_due_date" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label>Batch No.</label>
+          <input type="text" name="batch_no" class="form-control" placeholder="เลข Lot/Batch">
+        </div>
+
+        <div class="form-group full-width">
+          <label>หมายเหตุ</label>
+          <textarea name="notes" class="form-control" rows="2" placeholder="หมายเหตุเพิ่มเติม..."></textarea>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> บันทึกการฉีดวัคซีน
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== ประวัติฉีดวัคซีนล่าสุด ===== -->
+<div class="data-card">
+  <div class="data-card-header">
+    <h2><i class="fas fa-history"></i> ประวัติฉีดวัคซีนล่าสุด</h2>
+  </div>
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>วันที่ฉีด</th>
+          <th>สัตว์เลี้ยง</th>
+          <th>เจ้าของ</th>
+          <th>วัคซีน</th>
+          <th>Batch No.</th>
+          <th>สัตวแพทย์</th>
+          <th>ครบกำหนดถัดไป</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in recent_records %}
+        <tr>
+          <td><strong>{{ r.given_date|date:"d/m/Y" }}</strong></td>
+          <td>{{ r.pet_name }}</td>
+          <td>{{ r.owner_name }}</td>
+          <td><span class="badge badge-purple">{{ r.vaccine_name }}</span></td>
+          <td>{{ r.batch_no|default:"-" }}</td>
+          <td>{{ r.vet_name }}</td>
+          <td>
+            {% if r.next_due_date %}
+              {{ r.next_due_date|date:"d/m/Y" }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7">
+            <div class="empty-state">
+              <i class="fas fa-history"></i>
+              <p>ยังไม่มีประวัติการฉีดวัคซีน</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterTable(inputId, tableId) {
+  const filter = document.getElementById(inputId).value.toLowerCase();
+  const rows = document.getElementById(tableId).querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(filter) ? '' : 'none';
+  });
+}
+
+function toggleSection(id) {
+  const el = document.getElementById(id);
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    el.style.display = 'none';
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "public/base_public.html" %}
+
+{% block title %}หน้าแรก{% endblock %}
+
+{% block content %}
+
+<!-- ===== Hero Section ===== -->
+<section class="hero">
+  <div class="hero-overlay"></div>
+  <div class="container hero-content">
+    <div class="hero-badge">🐾 EST. 2024</div>
+    <h1 class="hero-title">ดูแลสัตว์เลี้ยง<br>ด้วย<span class="text-gradient">ความรักและมาตรฐาน</span></h1>
+    <p class="hero-subtitle">คลินิกมังคุด สัตวแพทย์ — พร้อมให้บริการตรวจรักษา ฉีดวัคซีน ผ่าตัด และดูแลสุขภาพแบบครบวงจร</p>
+    <div class="hero-actions">
+      <a href="{% url 'public_booking' %}" class="btn-hero btn-hero-primary">
+        <i class="fas fa-calendar-plus"></i> จองคิวนัดหมาย
+      </a>
+      <a href="{% url 'public_services' %}" class="btn-hero btn-hero-outline">
+        <i class="fas fa-stethoscope"></i> ดูบริการทั้งหมด
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Why Choose Us ===== -->
+<section class="section section-features">
+  <div class="container">
+    <div class="section-header">
+      <h2>ทำไมต้องเลือก<span class="text-gradient"> มังคุด สัตวแพทย์</span></h2>
+      <p>เราพร้อมดูแลสัตว์เลี้ยงของคุณอย่างดีที่สุด</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background: rgba(108,92,231,0.1); color: #6C5CE7;">
+          <i class="fas fa-user-md"></i>
+        </div>
+        <h3>ทีมสัตวแพทย์ผู้เชี่ยวชาญ</h3>
+        <p>สัตวแพทย์ที่มีใบอนุญาตและประสบการณ์ พร้อมให้คำปรึกษาและรักษาอย่างมืออาชีพ</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background: rgba(0,206,201,0.1); color: #00CEC9;">
+          <i class="fas fa-heartbeat"></i>
+        </div>
+        <h3>อุปกรณ์ทันสมัย</h3>
+        <p>เครื่องมือและอุปกรณ์การแพทย์ที่ทันสมัย ได้มาตรฐาน เพื่อการวินิจฉัยที่แม่นยำ</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background: rgba(253,121,168,0.1); color: #FD79A8;">
+          <i class="fas fa-hand-holding-heart"></i>
+        </div>
+        <h3>ดูแลด้วยความรัก</h3>
+        <p>เราเข้าใจว่าสัตว์เลี้ยงคือสมาชิกในครอบครัว จึงดูแลอย่างอ่อนโยนเหมือนลูกของเราเอง</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background: rgba(0,184,148,0.1); color: #00B894;">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h3>เปิดบริการทุกวัน</h3>
+        <p>เปิดให้บริการทุกวัน จันทร์-เสาร์ 09:00-20:00 น. และอาทิตย์ 10:00-17:00 น.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Services Preview ===== -->
+<section class="section section-services-preview">
+  <div class="container">
+    <div class="section-header">
+      <h2>บริการของเรา</h2>
+      <p>บริการดูแลสุขภาพสัตว์เลี้ยงครบวงจร</p>
+    </div>
+    <div class="services-grid">
+      {% for svc in services %}
+      <div class="service-card-home">
+        <div class="service-card-icon">
+          {% if 'ตรวจ' in svc.service_name %}
+            <i class="fas fa-stethoscope"></i>
+          {% elif 'วัคซีน' in svc.service_name or 'ฉีด' in svc.service_name %}
+            <i class="fas fa-syringe"></i>
+          {% elif 'ผ่าตัด' in svc.service_name or 'ทำหมัน' in svc.service_name %}
+            <i class="fas fa-procedures"></i>
+          {% elif 'อาบน้ำ' in svc.service_name or 'กรูม' in svc.service_name %}
+            <i class="fas fa-shower"></i>
+          {% elif 'ฟัน' in svc.service_name %}
+            <i class="fas fa-tooth"></i>
+          {% elif 'เอก' in svc.service_name or 'X-ray' in svc.service_name %}
+            <i class="fas fa-x-ray"></i>
+          {% else %}
+            <i class="fas fa-paw"></i>
+          {% endif %}
+        </div>
+        <h3>{{ svc.service_name }}</h3>
+        <p>{{ svc.description|default:"บริการดูแลสัตว์เลี้ยงของคุณ" }}</p>
+        <div class="service-price">฿{{ svc.price|floatformat:0 }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="text-align: center; margin-top: 32px;">
+      <a href="{% url 'public_services' %}" class="btn-hero btn-hero-primary">
+        <i class="fas fa-arrow-right"></i> ดูบริการทั้งหมด
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA Section ===== -->
+<section class="section section-cta">
+  <div class="container">
+    <div class="cta-box">
+      <h2>พร้อมให้เราดูแลสัตว์เลี้ยงของคุณ?</h2>
+      <p>จองคิวนัดหมายออนไลน์ได้ง่ายๆ เลือกวัน เวลา และบริการที่ต้องการ</p>
+      <a href="{% url 'public_booking' %}" class="btn-hero btn-hero-white">
+        <i class="fas fa-calendar-check"></i> จองคิวเลย
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

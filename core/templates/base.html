@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Pet Clinic{% endblock %} — ระบบจัดการคลินิกสัตว์เลี้ยง</title>
-  <meta name="description" content="ระบบจัดการคลินิกรักษาสัตว์เลี้ยง Pet Clinic Management System">
+  <title>{% block title %}Mangkud Vet{% endblock %} — มังคุด สัตวแพทย์</title>
+  <meta name="description" content="ระบบจัดการคลินิก มังคุด สัตวแพทย์ Mangkud Veterinary Clinic">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,10 +22,10 @@
   <!-- ===== Sidebar ===== -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-icon">🐾</div>
+      <img src="{% static 'images/logo.png' %}" alt="Mangkud Vet Clinic" class="brand-logo">
       <div class="brand-text">
-        Pet Clinic
-        <small>ระบบจัดการคลินิก</small>
+        Mangkud Vet
+        <small>มังคุด สัตวแพทย์</small>
       </div>
     </div>
 
@@ -57,6 +57,11 @@
       <a href="{% url 'vet_list' %}" class="nav-item {% if active_page == 'vets' %}active{% endif %}">
         <i class="fas fa-user-md"></i>
         สัตวแพทย์
+      </a>
+
+      <a href="{% url 'vaccine_list' %}" class="nav-item {% if active_page == 'vaccines' %}active{% endif %}">
+        <i class="fas fa-syringe"></i>
+        วัคซีน
       </a>
     </nav>
   </aside>

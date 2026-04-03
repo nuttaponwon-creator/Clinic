@@ -1,0 +1,161 @@
+{% extends "public/base_public.html" %}
+
+{% block title %}จองคิวนัดหมาย{% endblock %}
+
+{% block content %}
+
+<!-- ===== Page Header ===== -->
+<section class="page-hero">
+  <div class="container">
+    <h1>จองคิวนัดหมาย</h1>
+    <p>กรอกข้อมูลเพื่อนัดหมายเข้าใช้บริการ ทางคลินิกจะติดต่อกลับเพื่อยืนยันนัดหมาย</p>
+  </div>
+</section>
+
+<!-- ===== Booking Form ===== -->
+<section class="section">
+  <div class="container">
+    <div class="booking-wrapper">
+
+      <!-- Success Message -->
+      {% if success %}
+      <div class="booking-success">
+        <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+        <h2>นัดหมายสำเร็จ! 🎉</h2>
+        <p>ทางคลินิกได้รับข้อมูลการนัดหมายของคุณแล้ว<br>เราจะติดต่อกลับเพื่อยืนยันนัดหมายภายใน 24 ชั่วโมง</p>
+        <a href="{% url 'home' %}" class="btn-hero btn-hero-primary" style="margin-top: 20px;">
+          <i class="fas fa-home"></i> กลับหน้าแรก
+        </a>
+      </div>
+      {% else %}
+
+      <div class="booking-form-card">
+        <div class="booking-form-header">
+          <i class="fas fa-calendar-check"></i>
+          <h2>ข้อมูลการนัดหมาย</h2>
+        </div>
+
+        {% if error %}
+        <div class="booking-alert">
+          <i class="fas fa-exclamation-circle"></i> {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="">
+          {% csrf_token %}
+
+          <!-- ===== ข้อมูลเจ้าของ (ค้นหาจากเบอร์โทร) ===== -->
+          <div class="form-section">
+            <h3><i class="fas fa-user"></i> ข้อมูลเจ้าของ</h3>
+
+            <div class="booking-form-grid">
+              <div class="form-group-pub">
+                <label>เบอร์โทรศัพท์ <span class="req">*</span></label>
+                <input type="text" name="phone" class="input-pub" placeholder="เช่น 0812345678"
+                       value="{{ form_data.phone|default:'' }}" required
+                       id="phoneInput">
+                <small class="input-hint">ถ้าเคยมาใช้บริการแล้ว ใส่เบอร์เดิมเพื่อดึงข้อมูลอัตโนมัติ</small>
+              </div>
+
+              <div class="form-group-pub">
+                <label>ชื่อ <span class="req">*</span></label>
+                <input type="text" name="first_name" class="input-pub" placeholder="ชื่อ"
+                       value="{{ form_data.first_name|default:'' }}" required>
+              </div>
+
+              <div class="form-group-pub">
+                <label>นามสกุล <span class="req">*</span></label>
+                <input type="text" name="last_name" class="input-pub" placeholder="นามสกุล"
+                       value="{{ form_data.last_name|default:'' }}" required>
+              </div>
+
+              <div class="form-group-pub">
+                <label>อีเมล</label>
+                <input type="email" name="email" class="input-pub" placeholder="email@example.com"
+                       value="{{ form_data.email|default:'' }}">
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== ข้อมูลสัตว์เลี้ยง ===== -->
+          <div class="form-section">
+            <h3><i class="fas fa-paw"></i> ข้อมูลสัตว์เลี้ยง</h3>
+
+            <div class="booking-form-grid">
+              <div class="form-group-pub">
+                <label>ชื่อสัตว์เลี้ยง <span class="req">*</span></label>
+                <input type="text" name="pet_name" class="input-pub" placeholder="เช่น บัดดี้"
+                       value="{{ form_data.pet_name|default:'' }}" required>
+              </div>
+
+              <div class="form-group-pub">
+                <label>ชนิดสัตว์ <span class="req">*</span></label>
+                <select name="species_id" class="input-pub" required>
+                  <option value="">-- เลือกชนิดสัตว์ --</option>
+                  {% for sp in species %}
+                    <option value="{{ sp.species_id }}" {% if form_data.species_id == sp.species_id|stringformat:"d" %}selected{% endif %}>
+                      {{ sp.species_name }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== เลือกบริการ + วันเวลา ===== -->
+          <div class="form-section">
+            <h3><i class="fas fa-stethoscope"></i> เลือกบริการและวันนัด</h3>
+
+            <div class="booking-form-grid">
+              <div class="form-group-pub">
+                <label>บริการที่ต้องการ <span class="req">*</span></label>
+                <select name="service_id" class="input-pub" required>
+                  <option value="">-- เลือกบริการ --</option>
+                  {% for svc in services %}
+                    <option value="{{ svc.service_id }}" {% if selected_service == svc.service_id|stringformat:"d" %}selected{% endif %}>
+                      {{ svc.service_name }} (฿{{ svc.price|floatformat:0 }})
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group-pub">
+                <label>สัตวแพทย์</label>
+                <select name="vet_id" class="input-pub">
+                  <option value="">-- ไม่ระบุ (ให้คลินิกจัด) --</option>
+                  {% for vet in vets %}
+                    <option value="{{ vet.vet_id }}">
+                      {{ vet.first_name }} {{ vet.last_name }}{% if vet.specialization %} ({{ vet.specialization }}){% endif %}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="form-group-pub">
+                <label>วันที่-เวลาที่ต้องการ <span class="req">*</span></label>
+                <input type="datetime-local" name="appt_datetime" class="input-pub" required
+                       value="{{ form_data.appt_datetime|default:'' }}">
+              </div>
+
+              <div class="form-group-pub full">
+                <label>อาการ / เหตุผลนัด</label>
+                <textarea name="reason" class="input-pub" rows="3"
+                          placeholder="เช่น น้องหมาไม่กินข้าว 2 วัน, ต้องการฉีดวัคซีนประจำปี">{{ form_data.reason|default:'' }}</textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="booking-form-actions">
+            <button type="submit" class="btn-hero btn-hero-primary btn-block">
+              <i class="fas fa-paper-plane"></i> ยืนยันนัดหมาย
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
