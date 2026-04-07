@@ -5,15 +5,21 @@ urlpatterns = [
     # ========================================
     #  PUBLIC — หน้าลูกค้า
     # ========================================
-    path('public/', views.public_home, name='home'),
+    path('', views.public_home, name='home'),
     path('services/', views.public_services, name='public_services'),
     path('booking/', views.public_booking, name='public_booking'),
 
     # ========================================
+    #  AUTH — เข้าสู่ระบบ / สมัครสมาชิก
+    # ========================================
+    path('login/', views.user_login, name='login'),
+    path('register/', views.user_register, name='register'),
+    path('logout/', views.user_logout, name='logout'),
+
+    # ========================================
     #  ADMIN — หน้าจัดการ (สำหรับพนักงาน)
     # ========================================
-    path('', views.dashboard, name='dashboard'),
-    path('admin-panel/', views.dashboard, name='legacy_dashboard'), # เก็บไว้เผื่อมีลิงก์เก่าค้างอยู่
+    path('admin-panel/', views.dashboard, name='dashboard'),
 
     # สัตว์เลี้ยง
     path('admin-panel/pets/', views.pet_list, name='pet_list'),

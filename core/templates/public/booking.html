@@ -133,8 +133,28 @@
 
               <div class="form-group-pub">
                 <label>วันที่-เวลาที่ต้องการ <span class="req">*</span></label>
-                <input type="datetime-local" name="appt_datetime" class="input-pub" required
-                       value="{{ form_data.appt_datetime|default:'' }}">
+                <div style="display: flex; gap: 10px;">
+                  <input type="date" name="appt_date" class="input-pub" required style="flex: 1;"
+                         value="{{ form_data.appt_date|default:'' }}">
+                  <select name="appt_time" class="input-pub" required style="flex: 1;">
+                    <option value="">กรุณาเลือกเวลา</option>
+                    <optgroup label="ก่อนเที่ยง">
+                      <option value="09:00:00" {% if form_data.appt_time == '09:00:00' %}selected{% endif %}>9:00 - 10:00</option>
+                      <option value="10:00:00" {% if form_data.appt_time == '10:00:00' %}selected{% endif %}>10:00 - 11:00</option>
+                      <option value="11:00:00" {% if form_data.appt_time == '11:00:00' %}selected{% endif %}>11:00 - 12:00</option>
+                    </optgroup>
+                    <optgroup label="หลังเที่ยง">
+                      <option value="13:00:00" {% if form_data.appt_time == '13:00:00' %}selected{% endif %}>13:00 - 14:00</option>
+                      <option value="14:00:00" {% if form_data.appt_time == '14:00:00' %}selected{% endif %}>14:00 - 15:00</option>
+                      <option value="15:00:00" {% if form_data.appt_time == '15:00:00' %}selected{% endif %}>15:00 - 16:00</option>
+                    </optgroup>
+                    <optgroup label="ช่วงเย็น">
+                      <option value="16:00:00" {% if form_data.appt_time == '16:00:00' %}selected{% endif %}>16:00 - 17:00</option>
+                      <option value="18:00:00" {% if form_data.appt_time == '18:00:00' %}selected{% endif %}>18:00 - 19:00</option>
+                      <option value="19:00:00" {% if form_data.appt_time == '19:00:00' %}selected{% endif %}>19:00 - 20:00</option>
+                    </optgroup>
+                  </select>
+                </div>
               </div>
 
               <div class="form-group-pub full">

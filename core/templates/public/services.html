@@ -1,4 +1,5 @@
 {% extends "public/base_public.html" %}
+{% load static %}
 
 {% block title %}บริการของเรา{% endblock %}
 
@@ -18,36 +19,42 @@
     <div class="services-full-grid">
       {% for svc in services %}
       <div class="service-full-card">
-        <div class="service-full-icon">
-          {% if 'ตรวจ' in svc.service_name %}
-            <i class="fas fa-stethoscope"></i>
-          {% elif 'วัคซีน' in svc.service_name or 'ฉีด' in svc.service_name %}
-            <i class="fas fa-syringe"></i>
-          {% elif 'ผ่าตัด' in svc.service_name or 'ทำหมัน' in svc.service_name %}
-            <i class="fas fa-procedures"></i>
-          {% elif 'อาบน้ำ' in svc.service_name or 'กรูม' in svc.service_name %}
-            <i class="fas fa-shower"></i>
-          {% elif 'ฟัน' in svc.service_name %}
-            <i class="fas fa-tooth"></i>
-          {% elif 'เอก' in svc.service_name or 'X-ray' in svc.service_name %}
-            <i class="fas fa-x-ray"></i>
-          {% elif 'lab' in svc.service_name|lower or 'เลือด' in svc.service_name %}
-            <i class="fas fa-vial"></i>
-          {% else %}
-            <i class="fas fa-paw"></i>
-          {% endif %}
+        <div class="service-card-image">
+          <div class="service-full-icon">
+            {% if 'ตรวจ' in svc.service_name %}
+              <i class="fas fa-stethoscope"></i>
+            {% elif 'วัคซีน' in svc.service_name or 'ฉีด' in svc.service_name %}
+              <i class="fas fa-syringe"></i>
+            {% elif 'ผ่าตัด' in svc.service_name or 'ทำหมัน' in svc.service_name %}
+              <i class="fas fa-procedures"></i>
+            {% elif 'อาบน้ำ' in svc.service_name or 'กรูม' in svc.service_name %}
+              <i class="fas fa-shower"></i>
+            {% elif 'ฟัน' in svc.service_name %}
+              <i class="fas fa-tooth"></i>
+            {% elif 'เอก' in svc.service_name or 'X-ray' in svc.service_name %}
+              <i class="fas fa-x-ray"></i>
+            {% elif 'lab' in svc.service_name|lower or 'เลือด' in svc.service_name %}
+              <i class="fas fa-vial"></i>
+            {% else %}
+              <i class="fas fa-paw"></i>
+            {% endif %}
+          </div>
         </div>
-        <div class="service-full-info">
+        
+        <div class="service-card-body">
           <h3>{{ svc.service_name }}</h3>
           <p>{{ svc.description|default:"บริการดูแลสัตว์เลี้ยงด้วยมาตรฐานการแพทย์" }}</p>
         </div>
-        <div class="service-full-price">
-          <span class="price-label">ราคาเริ่มต้น</span>
-          <span class="price-value">฿{{ svc.price|floatformat:0 }}</span>
+
+        <div class="service-card-footer">
+          <div class="footer-stat service-full-price">
+            <span class="price-value">฿{{ svc.price|floatformat:0 }}</span>
+            <span class="price-label">ราคาเริ่มต้น</span>
+          </div>
+          <a href="{% url 'public_booking' %}?service={{ svc.service_id }}" class="footer-stat btn-service-book">
+            <i class="fas fa-calendar-plus"></i> จองคิว
+          </a>
         </div>
-        <a href="{% url 'public_booking' %}?service={{ svc.service_id }}" class="btn-service-book">
-          <i class="fas fa-calendar-plus"></i> จองคิว
-        </a>
       </div>
       {% empty %}
       <div style="text-align: center; padding: 60px; color: #999;">

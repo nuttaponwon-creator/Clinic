@@ -22,7 +22,7 @@
   <!-- ===== Sidebar ===== -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <img src="{% static 'images/logo.png' %}" alt="Mangkud Vet Clinic" class="brand-logo">
+      <img src="{% static 'images/logo-removebg-preview.png' %}" alt="Mangkud Vet Clinic" class="brand-logo">
       <div class="brand-text">
         Mangkud Vet
         <small>มังคุด สัตวแพทย์</small>
@@ -63,6 +63,17 @@
         <i class="fas fa-syringe"></i>
         วัคซีน
       </a>
+
+      <!-- ===== Logout ===== -->
+      <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.05);">
+        <div style="padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--text-body);">
+          <i class="fas fa-user-circle"></i> {{ user.username }}
+        </div>
+        <a href="{% url 'logout' %}" class="nav-item" style="color: #E17055;">
+          <i class="fas fa-sign-out-alt"></i>
+          ออกจากระบบ
+        </a>
+      </div>
     </nav>
   </aside>
 

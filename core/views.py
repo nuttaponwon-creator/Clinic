@@ -1,6 +1,9 @@
 from django.db import connection
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -40,8 +43,88 @@ def clean_value(val, val_type='str'):
 
 
 # ===========================================================
+#  AUTH — Login / Register / Logout
+# ===========================================================
+def user_login(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect('dashboard')
+        else:
+            return render(request, 'auth/login.html', {
+                'error': 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'
+            })
+
+    return render(request, 'auth/login.html')
+
+
+def user_register(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+        password2 = request.POST.get('password2', '')
+        email = request.POST.get('email', '').strip()
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+
+        form_data = request.POST.dict()
+
+        if not username or not password:
+            return render(request, 'auth/register.html', {
+                'error': 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน',
+                'form_data': form_data,
+            })
+
+        if password != password2:
+            return render(request, 'auth/register.html', {
+                'error': 'รหัสผ่านไม่ตรงกัน',
+                'form_data': form_data,
+            })
+
+        if len(password) < 6:
+            return render(request, 'auth/register.html', {
+                'error': 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร',
+                'form_data': form_data,
+            })
+
+        if User.objects.filter(username=username).exists():
+            return render(request, 'auth/register.html', {
+                'error': f'ชื่อผู้ใช้ "{username}" ถูกใช้ไปแล้ว',
+                'form_data': form_data,
+            })
+
+        User.objects.create_user(
+            username=username,
+            password=password,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+        )
+        return render(request, 'auth/login.html', {
+            'success': 'สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ'
+        })
+
+    return render(request, 'auth/register.html')
+
+
+def user_logout(request):
+    auth_logout(request)
+    return redirect('login')
+
+
+# ===========================================================
 #  DASHBOARD
 # ===========================================================
+@login_required(login_url='login')
 def dashboard(request):
     with connection.cursor() as c:
         c.execute("SELECT COUNT(*) FROM dbo.PET WHERE is_active = 1")
@@ -80,6 +163,7 @@ def dashboard(request):
 # ===========================================================
 #  PETS — List
 # ===========================================================
+@login_required(login_url='login')
 def pet_list(request):
     with connection.cursor() as c:
         c.execute("SELECT * FROM dbo.VW_PET_FULL ORDER BY pet_id")
@@ -94,6 +178,7 @@ def pet_list(request):
 # ===========================================================
 #  PETS — Add
 # ===========================================================
+@login_required(login_url='login')
 def pet_add(request):
     if request.method == 'POST':
         try:
@@ -143,6 +228,7 @@ def pet_add(request):
 # ===========================================================
 #  PETS — Edit
 # ===========================================================
+@login_required(login_url='login')
 def pet_edit(request, pet_id):
     if request.method == 'POST':
         try:
@@ -197,6 +283,7 @@ def pet_edit(request, pet_id):
 # ===========================================================
 #  OWNERS — List
 # ===========================================================
+@login_required(login_url='login')
 def owner_list(request):
     with connection.cursor() as c:
         c.execute("SELECT * FROM dbo.OWNER ORDER BY owner_id")
@@ -211,6 +298,7 @@ def owner_list(request):
 # ===========================================================
 #  OWNERS — Add
 # ===========================================================
+@login_required(login_url='login')
 def owner_add(request):
     if request.method == 'POST':
         try:
@@ -239,6 +327,7 @@ def owner_add(request):
 # ===========================================================
 #  OWNERS — Edit
 # ===========================================================
+@login_required(login_url='login')
 def owner_edit(request, owner_id):
     if request.method == 'POST':
         try:
@@ -274,6 +363,7 @@ def owner_edit(request, owner_id):
 # ===========================================================
 #  APPOINTMENTS — List
 # ===========================================================
+@login_required(login_url='login')
 def appointment_list(request):
     with connection.cursor() as c:
         c.execute("SELECT * FROM dbo.VW_UPCOMING_APPOINTMENTS ORDER BY appt_datetime")
@@ -288,9 +378,14 @@ def appointment_list(request):
 # ===========================================================
 #  APPOINTMENTS — Add
 # ===========================================================
+@login_required(login_url='login')
 def appointment_add(request):
     if request.method == 'POST':
         try:
+            appt_date = request.POST.get('appt_date', '').strip()
+            appt_time = request.POST.get('appt_time', '').strip()
+            appt_datetime_str = f"{appt_date} {appt_time}" if appt_date and appt_time else None
+
             with connection.cursor() as c:
                 c.execute("""
                     INSERT INTO dbo.APPOINTMENT (pet_id, vet_id, appt_datetime, reason, notes)
@@ -298,7 +393,7 @@ def appointment_add(request):
                 """, [
                     clean_value(request.POST['pet_id'], 'int'),
                     clean_value(request.POST['vet_id'], 'int'),
-                    clean_value(request.POST['appt_datetime'], 'datetime'),
+                    clean_value(appt_datetime_str, 'datetime'),
                     request.POST.get('reason') or None,
                     request.POST.get('notes') or None,
                 ])
@@ -330,6 +425,7 @@ def appointment_add(request):
 # ===========================================================
 #  VETS — List (Read-only)
 # ===========================================================
+@login_required(login_url='login')
 def vet_list(request):
     with connection.cursor() as c:
         c.execute("SELECT * FROM dbo.VW_VET_WORKLOAD ORDER BY vet_id")
@@ -344,6 +440,7 @@ def vet_list(request):
 # ===========================================================
 #  VACCINES — List + Record
 # ===========================================================
+@login_required(login_url='login')
 def vaccine_list(request):
     with connection.cursor() as c:
         # ข้อมูลวัคซีนทั้งหมด
@@ -396,6 +493,7 @@ def vaccine_list(request):
     })
 
 
+@login_required(login_url='login')
 def vaccine_record_add(request):
     if request.method == 'POST':
         try:
@@ -430,6 +528,7 @@ def vaccine_record_add(request):
 # ===========================================================
 #  VACCINES — เพิ่มวัคซีนชนิดใหม่
 # ===========================================================
+@login_required(login_url='login')
 def vaccine_add(request):
     if request.method == 'POST':
         try:
@@ -458,6 +557,7 @@ def vaccine_add(request):
 # ===========================================================
 #  VACCINES — เติมสต็อก
 # ===========================================================
+@login_required(login_url='login')
 def vaccine_restock(request):
     if request.method == 'POST':
         try:
@@ -550,7 +650,10 @@ def public_booking(request):
             species_id = clean_value(request.POST['species_id'], 'int')
             service_id = clean_value(request.POST.get('service_id'), 'int')
             vet_id = clean_value(request.POST.get('vet_id'), 'int')
-            appt_datetime = clean_value(request.POST['appt_datetime'], 'datetime')
+            appt_date = request.POST.get('appt_date', '').strip()
+            appt_time = request.POST.get('appt_time', '').strip()
+            appt_datetime_str = f"{appt_date} {appt_time}" if appt_date and appt_time else None
+            appt_datetime = clean_value(appt_datetime_str, 'datetime')
             reason = request.POST.get('reason', '').strip() or None
 
             with connection.cursor() as c:

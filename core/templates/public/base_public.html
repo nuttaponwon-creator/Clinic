@@ -18,7 +18,7 @@
   <nav class="navbar" id="navbar">
     <div class="container nav-container">
       <a href="{% url 'home' %}" class="nav-brand">
-        <img src="{% static 'images/logo.png' %}" alt="Mangkud Vet" class="nav-logo">
+        <img src="{% static 'images/logo-removebg-preview.png' %}" alt="Mangkud Vet" class="nav-logo">
         <div>
           <span class="nav-brand-name">Mangkud Vet</span>
           <span class="nav-brand-sub">มังคุด สัตวแพทย์</span>
@@ -30,6 +30,15 @@
         <a href="{% url 'public_booking' %}" class="nav-link btn-booking">
           <i class="fas fa-calendar-plus"></i> จองคิว
         </a>
+        
+        <div style="width: 1px; height: 20px; background: rgba(0,0,0,0.1); margin: 0 4px;"></div>
+
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard' %}" class="nav-link"><i class="fas fa-th-large"></i> แดชบอร์ด</a>
+          <a href="{% url 'logout' %}" class="nav-link" style="color: #E17055;"><i class="fas fa-sign-out-alt"></i></a>
+        {% else %}
+          <a href="{% url 'login' %}" class="nav-link"><i class="fas fa-user-circle"></i> เข้าสู่ระบบ</a>
+        {% endif %}
       </div>
       <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">
         <i class="fas fa-bars"></i>

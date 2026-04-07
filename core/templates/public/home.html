@@ -1,23 +1,68 @@
 {% extends "public/base_public.html" %}
+{% load static %}
 
 {% block title %}หน้าแรก{% endblock %}
 
 {% block content %}
 
 <!-- ===== Hero Section ===== -->
+<style>
+  @keyframes floatMascot {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+  }
+  .hero-layout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    text-align: left;
+  }
+  .hero-text-side {
+    max-width: 600px;
+  }
+  .hero-actions {
+    justify-content: flex-start;
+  }
+  .mascot-img {
+    max-width: 450px;
+    width: 100%;
+    animation: floatMascot 4s ease-in-out infinite;
+    filter: drop-shadow(0 20px 40px rgba(126, 196, 196, 0.4));
+    border-radius: 20px;
+  }
+  @media (max-width: 900px) {
+    .hero-layout {
+      flex-direction: column;
+      text-align: center;
+      padding-top: 140px;
+    }
+    .hero-text-side { margin: 0 auto; }
+    .hero-actions { justify-content: center; }
+    .mascot-img { max-width: 300px; margin-top: 40px; }
+  }
+</style>
+
 <section class="hero">
   <div class="hero-overlay"></div>
-  <div class="container hero-content">
-    <div class="hero-badge">🐾 EST. 2024</div>
-    <h1 class="hero-title">ดูแลสัตว์เลี้ยง<br>ด้วย<span class="text-gradient">ความรักและมาตรฐาน</span></h1>
-    <p class="hero-subtitle">คลินิกมังคุด สัตวแพทย์ — พร้อมให้บริการตรวจรักษา ฉีดวัคซีน ผ่าตัด และดูแลสุขภาพแบบครบวงจร</p>
-    <div class="hero-actions">
-      <a href="{% url 'public_booking' %}" class="btn-hero btn-hero-primary">
-        <i class="fas fa-calendar-plus"></i> จองคิวนัดหมาย
-      </a>
-      <a href="{% url 'public_services' %}" class="btn-hero btn-hero-outline">
-        <i class="fas fa-stethoscope"></i> ดูบริการทั้งหมด
-      </a>
+  <div class="container hero-content hero-layout">
+    <div class="hero-text-side">
+      <div class="hero-badge">🐾 ยินดีต้อนรับสู่ มังคุด สัตวแพทย์</div>
+      <h1 class="hero-title">ดูแลสัตว์เลี้ยง<br>ด้วย<span class="text-gradient">ความรักและมาตรฐาน</span></h1>
+      <p class="hero-subtitle">ให้แอดมิน <strong>"น้องนาวี่"</strong> และทีมสัตวแพทย์ของเรา ดูแลสุขภาพสัตว์เลี้ยงของคุณอย่างใกล้ชิด บริการครบวงจร ตรวจรักษา วัคซีน และผ่าตัด</p>
+      <div class="hero-actions">
+        <a href="{% url 'public_booking' %}" class="btn-hero btn-hero-primary">
+          <i class="fas fa-calendar-plus"></i> จองคิวนัดหมาย
+        </a>
+        <a href="{% url 'public_services' %}" class="btn-hero btn-hero-outline">
+          <i class="fas fa-stethoscope"></i> ดูบริการทั้งหมด
+        </a>
+      </div>
+    </div>
+    
+    <div class="hero-mascot-side">
+      <img src="{% static 'images/Nongnavi-removebg-preview.png' %}" alt="น้องนาวี่ มาสคอตประจำคลินิก" class="mascot-img">
     </div>
   </div>
 </section>
