@@ -18,15 +18,12 @@
   <nav class="navbar" id="navbar">
     <div class="container nav-container">
       <a href="{% url 'home' %}" class="nav-brand">
-        <img src="{% static 'images/logo-removebg-preview.png' %}" alt="Mangkud Vet" class="nav-logo">
-        <div>
-          <span class="nav-brand-name">Mangkud Vet</span>
-          <span class="nav-brand-sub">มังคุด สัตวแพทย์</span>
-        </div>
+        <img src="{% static 'images/LoGoclinicV2.png' %}" alt="Mangkud Vet" class="nav-logo">
       </a>
       <div class="nav-links">
         <a href="{% url 'home' %}" class="nav-link {% if active_page == 'home' %}active{% endif %}">หน้าแรก</a>
         <a href="{% url 'public_services' %}" class="nav-link {% if active_page == 'services' %}active{% endif %}">บริการ</a>
+        <a href="{% url 'public_doctors' %}" class="nav-link {% if active_page == 'doctors' %}active{% endif %}">ทีมแพทย์</a>
         <a href="{% url 'public_booking' %}" class="nav-link btn-booking">
           <i class="fas fa-calendar-plus"></i> จองคิว
         </a>

@@ -752,3 +752,33 @@ def _render_booking_form(request, error=None, form_data=None, selected_service='
         'form_data': form_data or {},
         'selected_service': selected_service,
     })
+# ===========================================================
+#  PUBLIC — รายชื่อแพทย์
+# ===========================================================
+def public_doctors(request):
+    with connection.cursor() as c:
+        c.execute("SELECT * FROM dbo.VETERINARIAN WHERE is_active = 1 ORDER BY first_name")
+        vets = dictfetchall(c)
+
+    return render(request, 'public/doctors.html', {
+        'active_page': 'doctors',
+        'vets': vets,
+    })
+
+
+# ===========================================================
+#  PUBLIC — รายละเอียดแพทย์
+# ===========================================================
+def public_doctor_detail(request, vet_id):
+    with connection.cursor() as c:
+        c.execute("SELECT * FROM dbo.VETERINARIAN WHERE vet_id = %s AND is_active = 1", [vet_id])
+        vet = dictfetchone(c)
+
+    if not vet:
+        return redirect('public_doctors')
+
+    return render(request, 'public/doctor_detail.html', {
+        'active_page': 'doctors',
+        'vet': vet,
+    })
+
