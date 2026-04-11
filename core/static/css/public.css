@@ -45,14 +45,16 @@ a {
 
 /* ===== Navbar ===== */
 .navbar {
-  position: absolute; /* Changed to absolute to sit naturally over hero, or fixed if wanting sticky */
+  position: absolute;
+  /* Changed to absolute to sit naturally over hero, or fixed if wanting sticky */
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
   padding: 16px 0;
   transition: var(--transition);
-  background: transparent; /* No background on initial load */
+  background: transparent;
+  /* No background on initial load */
   box-shadow: none;
 }
 
@@ -78,23 +80,24 @@ a {
 }
 
 .nav-logo {
-  width: 100px;
-  height: 100px;
+  width: 180px;
+  max-height: 80px;
   object-fit: contain;
   transition: var(--transition);
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.08));
 }
 
 .navbar.scrolled .nav-logo {
-  width: 75px;
-  height: 75px;
+  width: 150px;
+  height: auto;
 }
 
 .nav-brand-name {
   display: block;
   font-size: 18px;
   font-weight: 800;
-  color: var(--primary-dark); /* Dark Teal */
+  color: var(--primary-dark);
+  /* Dark Teal */
   transition: var(--transition);
 }
 
@@ -125,13 +128,15 @@ a {
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--primary-dark); /* Dark Teal */
+  color: var(--primary-dark);
+  /* Dark Teal */
   transition: var(--transition);
 }
 
 .nav-link:hover {
   color: var(--primary-dark);
-  background: rgba(0, 131, 143, 0.08); /* Light Teal Hover */
+  background: rgba(0, 131, 143, 0.08);
+  /* Light Teal Hover */
 }
 
 .navbar.scrolled .nav-link {
@@ -1115,7 +1120,8 @@ select.input-pub {
   align-items: center;
   gap: 12px;
   padding: 18px 48px;
-  background: #0089D1; /* Thonglor-style Blue */
+  background: #0089D1;
+  /* Thonglor-style Blue */
   color: var(--white);
   border-radius: 50px;
   font-size: 18px;
@@ -1177,10 +1183,21 @@ select.input-pub {
   transition: var(--transition);
 }
 
-.share-icon.facebook { background: #1877F2; }
-.share-icon.messenger { background: #00B1FF; }
-.share-icon.line { background: #00C300; }
-.share-icon.twitter { background: #1DA1F2; }
+.share-icon.facebook {
+  background: #1877F2;
+}
+
+.share-icon.messenger {
+  background: #00B1FF;
+}
+
+.share-icon.line {
+  background: #00C300;
+}
+
+.share-icon.twitter {
+  background: #1DA1F2;
+}
 
 .share-icon:hover {
   transform: translateY(-3px);
@@ -1201,12 +1218,12 @@ select.input-pub {
     padding: 40px;
     gap: 30px;
   }
-  
+
   .detail-grid-info {
     grid-template-columns: 1fr;
     padding: 40px;
   }
-  
+
   .detail-footer {
     padding: 30px 40px;
     justify-content: center;

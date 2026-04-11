@@ -166,7 +166,12 @@ def dashboard(request):
 @login_required(login_url='login')
 def pet_list(request):
     with connection.cursor() as c:
-        c.execute("SELECT * FROM dbo.VW_PET_FULL ORDER BY pet_id")
+        c.execute("""
+            SELECT v.*, dbo.FN_PET_AGE(p.date_of_birth) AS age_display 
+            FROM dbo.VW_PET_FULL v
+            JOIN dbo.PET p ON v.pet_id = p.pet_id
+            ORDER BY v.pet_id
+        """)
         pets = dictfetchall(c)
 
     return render(request, 'pets.html', {
@@ -470,6 +475,7 @@ def vaccine_list(request):
         c.execute("""
             SELECT TOP 20
                 vr.vacc_record_id, vr.given_date, vr.next_due_date, vr.batch_no, vr.notes,
+                dbo.FN_NEXT_VACCINE(vr.pet_id) AS next_due_calc,
                 p.name AS pet_name,
                 o.first_name + ' ' + o.last_name AS owner_name,
                 vc.name AS vaccine_name,

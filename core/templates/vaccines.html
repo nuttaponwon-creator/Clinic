@@ -234,7 +234,14 @@
             {% if r.next_due_date %}
               {{ r.next_due_date|date:"d/m/Y" }}
             {% else %}
-              -
+              <span style="color:#999">-</span>
+            {% endif %}
+
+            {% if r.next_due_calc %}
+              <br>
+              <span title="คำนวณจากฟังก์ชัน FN_NEXT_VACCINE" style="color: #0984E3; font-size: 13px; font-weight: 600;">
+                <i class="fas fa-magic"></i> ระบบนัด: {{ r.next_due_calc }}
+              </span>
             {% endif %}
           </td>
         </tr>

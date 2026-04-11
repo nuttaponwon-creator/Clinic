@@ -26,6 +26,7 @@
           <th>ชื่อ</th>
           <th>ชนิด</th>
           <th>สายพันธุ์</th>
+          <th>อายุ</th>
           <th>เพศ</th>
           <th>น้ำหนัก (กก.)</th>
           <th>เจ้าของ</th>
@@ -42,6 +43,7 @@
           <td><strong>{{ pet.pet_name }}</strong></td>
           <td>{{ pet.species }}</td>
           <td>{{ pet.breed }}</td>
+          <td>{{ pet.age_display|default:"-" }}</td>
           <td>
             {% if pet.gender == 'M' %}
               <span class="gender-male"><i class="fas fa-mars"></i> ผู้</span>
