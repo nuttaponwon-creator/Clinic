@@ -65,7 +65,7 @@ a { text-decoration: none; color: inherit; }
   padding: 24px 20px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
@@ -82,12 +82,9 @@ a { text-decoration: none; color: inherit; }
 }
 
 .brand-logo {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
+  width: 65px;
+  height: 65px;
   object-fit: contain;
-  background: white;
-  padding: 3px;
   flex-shrink: 0;
 }
 
@@ -652,4 +649,359 @@ textarea.form-control {
   .page-content {
     padding: 20px 16px;
   }
+}
+/* ===== Form Redesign & UI Utilities ===== */
+.form-section {
+  background: #fdfdfd;
+  padding: 24px;
+  border-radius: var(--radius);
+  border: 1px solid #edf2f7;
+  margin-bottom: 24px;
+  transition: var(--transition);
+}
+
+.form-section:hover {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  border-color: var(--primary-light);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  color: var(--primary-dark);
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-bottom: 2px solid #f1f3f5;
+  padding-bottom: 10px;
+}
+
+.section-title i {
+  color: var(--primary);
+  background: rgba(108, 92, 231, 0.1);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.gender-pills {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.gender-pill {
+  position: relative;
+  flex: 1;
+}
+
+.gender-pill input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.gender-pill label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: 2px solid #edf2f7;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  gap: 4px;
+}
+
+.gender-pill input[type="radio"]:checked + label.male {
+  border-color: #0984e3;
+  background: rgba(9, 132, 227, 0.05);
+  color: #0984e3;
+}
+
+.gender-pill input[type="radio"]:checked + label.female {
+  border-color: #e84393;
+  background: rgba(232, 67, 147, 0.05);
+  color: #e84393;
+}
+
+.gender-pill label i {
+  font-size: 1.2rem;
+}
+
+/* Advanced Options Toggle */
+.advanced-toggle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #f1f3f5;
+  transition: var(--transition);
+}
+
+.advanced-toggle:hover {
+  background: #e9ecef;
+  color: var(--primary);
+}
+
+#advancedContent {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px dashed #dee2e6;
+}
+
+/* ===== Sidebar User Profile Card ===== */
+.sidebar-user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  margin: 0 12px 8px;
+  background: rgba(255,255,255,0.06);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.08);
+  position: relative;
+}
+
+.sidebar-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(108,92,231,0.4);
+}
+
+.sidebar-user-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar-user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFFFFF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.sidebar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+  margin-top: 3px;
+  letter-spacing: 0.2px;
+}
+
+.badge-admin {
+  background: rgba(108,92,231,0.25);
+  color: #A29BFE;
+  border: 1px solid rgba(108,92,231,0.3);
+}
+
+.badge-vet {
+  background: rgba(0,184,148,0.2);
+  color: #55EFC4;
+  border: 1px solid rgba(0,184,148,0.3);
+}
+
+.sidebar-web-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.08);
+  color: #A29BFE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  transition: var(--transition);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-web-btn:hover {
+  background: var(--primary);
+  color: white;
+  transform: scale(1.1);
+}
+
+/* ===== Sidebar Logout ===== */
+.sidebar-logout-wrap {
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin-top: 16px;
+}
+
+.nav-logout {
+  color: #E17055 !important;
+}
+
+.nav-logout:hover {
+  background: rgba(225,112,85,0.1) !important;
+  color: #FF7675 !important;
+}
+
+/* ===== Header Clock ===== */
+.header-clock {
+  display: flex;
+  align-items: center;
+  background: #F8F9FE;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid #E9ECEF;
+  font-size: 14px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ===== Dashboard Welcome Banner ===== */
+.db-welcome {
+  background: linear-gradient(135deg, #6c5ce7 0%, #a855f7 50%, #3b82f6 100%);
+  border-radius: 18px;
+  padding: 28px 32px;
+  color: white;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(108,92,231,0.3);
+}
+
+.db-welcome::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+}
+
+.db-welcome::after {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  right: 120px;
+  width: 150px;
+  height: 150px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 50%;
+}
+
+.db-welcome-left h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.db-welcome-left p {
+  font-size: 14px;
+  opacity: 0.85;
+  position: relative;
+}
+
+.db-welcome-right {
+  text-align: right;
+  position: relative;
+}
+
+.db-welcome-date {
+  font-size: 13px;
+  opacity: 0.75;
+  margin-bottom: 4px;
+}
+
+.db-welcome-dateval {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.db-appt-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 10px;
+  backdrop-filter: blur(4px);
+}
+
+/* ===== Vet On Duty Card ===== */
+.vet-duty-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f8f9ff, #f0f2ff);
+  margin-bottom: 10px;
+  border: 1px solid rgba(108,92,231,0.08);
+  transition: var(--transition);
+}
+
+.vet-duty-item:hover {
+  background: linear-gradient(135deg, #f0f0ff, #e8ebff);
+  border-color: rgba(108,92,231,0.2);
+}
+
+.vet-duty-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--success), #00cec9);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vet-duty-name {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.vet-duty-spec {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 1px;
 }

@@ -1,21 +1,25 @@
 {% extends "base.html" %}
 
-{% block title %}จัดการเจ้าของสัตว์{% endblock %}
-{% block page_title %}จัดการเจ้าของสัตว์{% endblock %}
-{% block page_subtitle %}ข้อมูลเจ้าของสัตว์เลี้ยงทั้งหมด{% endblock %}
+{% block title %}จัดการเจ้าของสัตว์ / Manage Owners{% endblock %}
+{% block page_title %}จัดการเจ้าของสัตว์ / Manage Owners{% endblock %}
+{% block page_subtitle %}ข้อมูลเจ้าของสัตว์เลี้ยงทั้งหมด / All Pet Owners in System{% endblock %}
 
 {% block content %}
 
 <div class="data-card">
   <div class="data-card-header">
-    <div class="toolbar">
+    <div class="toolbar" style="display: flex; gap: 15px; align-items: center;">
       <div class="search-box">
         <i class="fas fa-search"></i>
-        <input type="text" id="searchOwners" placeholder="ค้นหาชื่อ, เบอร์โทร, อีเมล..." onkeyup="filterTable('searchOwners', 'ownersTable')">
+        <input type="text" id="searchOwners" placeholder="ค้นหาชื่อ, เบอร์โทร... / Search..." onkeyup="filterTable('searchOwners', 'ownersTable')">
       </div>
+      <label class="toggle-container" style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: white; padding: 6px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;">
+        <input type="checkbox" id="showAllToggle" {% if show_all %}checked{% endif %} onchange="location.href='?show_all=' + (this.checked ? '1' : '0')">
+        แสดงทั้งหมด / Show All
+      </label>
     </div>
     <a href="{% url 'owner_add' %}" class="btn btn-primary">
-      <i class="fas fa-plus"></i> เพิ่มเจ้าของ
+      <i class="fas fa-plus"></i> เพิ่มเจ้าของ / Add Owner
     </a>
   </div>
   <div class="table-responsive">
@@ -23,26 +27,32 @@
       <thead>
         <tr>
           <th>ID</th>
-          <th>ชื่อ-นามสกุล</th>
-          <th>เบอร์โทร</th>
-          <th>อีเมล</th>
-          <th>ที่อยู่</th>
-          <th>วันที่ลงทะเบียน</th>
-          <th>จัดการ</th>
+          <th>ชื่อ-นามสกุล / Name</th>
+          <th>เบอร์โทร / Phone</th>
+          <th>อีเมล / Email</th>
+          <th>ที่อยู่ / Address</th>
+          <th>วันที่ลงทะเบียน / Reg. Date</th>
+          <th>จัดการ / Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for owner in owners %}
-        <tr>
+        <tr class="{% if not owner.is_active %}inactive-row{% endif %}" {% if not owner.is_active %}style="opacity: 0.6; background-color: #f9f9f9;"{% endif %}>
           <td>{{ owner.owner_id }}</td>
-          <td><strong>{{ owner.first_name }} {{ owner.last_name }}</strong></td>
+          <td>
+            <strong>{{ owner.first_name }} {{ owner.last_name }}</strong>
+            {% if not owner.is_active %}<br><small style="color:red;">(ปิดใช้งาน)</small>{% endif %}
+          </td>
           <td><i class="fas fa-phone" style="color: var(--success); margin-right: 6px;"></i>{{ owner.phone }}</td>
           <td>{{ owner.email|default:"-" }}</td>
           <td>{{ owner.address|default:"-"|truncatechars:40 }}</td>
           <td>{{ owner.registered_date|date:"d/m/Y" }}</td>
-          <td>
-            <a href="{% url 'owner_edit' owner.owner_id %}" class="btn btn-outline btn-icon" title="แก้ไข">
+          <td style="display: flex; gap: 5px;">
+            <a href="{% url 'owner_edit' owner.owner_id %}" class="btn btn-outline btn-icon btn-sm" title="แก้ไข">
               <i class="fas fa-edit"></i>
+            </a>
+            <a href="{% url 'toggle_active_status' 'owner' owner.owner_id %}" class="btn {% if owner.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %} btn-icon btn-sm" title="{% if owner.is_active %}ปิดใช้งาน{% else %}เปิดใช้งาน{% endif %}">
+              <i class="fas {% if owner.is_active %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
             </a>
           </td>
         </tr>
@@ -51,9 +61,9 @@
           <td colspan="7">
             <div class="empty-state">
               <i class="fas fa-users"></i>
-              <p>ยังไม่มีข้อมูลเจ้าของ</p>
+              <p>ยังไม่มีข้อมูลเจ้าของ / No owner data found</p>
               <a href="{% url 'owner_add' %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> เพิ่มเจ้าของคนแรก
+                <i class="fas fa-plus"></i> เพิ่มเจ้าของคนแรก / Add First Owner
               </a>
             </div>
           </td>

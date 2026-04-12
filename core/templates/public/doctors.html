@@ -1,14 +1,14 @@
 {% extends 'public/base_public.html' %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}ทีมสัตวแพทย์ — Mangkud Veterinary Clinic{% endblock %}
+{% block title %}{% trans "ทีมสัตวแพทย์" %} — NongNavi Clinic{% endblock %}
 
 {% block content %}
 <section class="page-hero">
     <div class="container">
         <div class="hero-badge">OUR DOCTORS</div>
-        <h1>ทีมสัตวแพทย์ผู้เชี่ยวชาญ</h1>
-        <p>ดูแลสัตว์เลี้ยงแสนรักของคุณด้วยความใส่ใจและมาตรฐานการรักษาที่วางใจได้</p>
+        <h1>{% trans "ทีมสัตวแพทย์ผู้เชี่ยวชาญ" %}</h1>
+        <p>{% trans "ดูแลสัตว์เลี้ยงแสนรักของคุณด้วยความใส่ใจและมาตรฐานการรักษาที่วางใจได้" %}</p>
     </div>
 </section>
 
@@ -27,22 +27,22 @@
                     </div>
                 </div>
                 <div class="doctor-info">
-                    <h3 class="doctor-name">สพ.ญ. {{ vet.first_name }} {{ vet.last_name }}</h3>
+                    <h3 class="doctor-name">{% trans "สพ.ญ." %} {{ vet.first_name }} {{ vet.last_name }}</h3>
                     <p class="doctor-name-en">Dr. {{ vet.first_name }} {{ vet.last_name }}</p>
                     <p class="doctor-specialization">{{ vet.specialization }}</p>
                 </div>
                 <div class="doctor-footer">
                     <a href="{% url 'public_booking' %}?vet={{ vet.vet_id }}" class="btn-doctor btn-book-vet">
-                        <i class="fas fa-calendar-alt"></i> ทำนัด
+                        <i class="fas fa-calendar-alt"></i> {% trans "ทำนัด" %}
                     </a>
                     <a href="{% url 'public_doctor_detail' vet.vet_id %}" class="btn-doctor btn-detail-vet">
-                        <i class="fas fa-search"></i> รายละเอียด
+                        <i class="fas fa-search"></i> {% trans "รายละเอียด" %}
                     </a>
                 </div>
             </div>
             {% empty %}
             <div style="text-align: center; grid-column: 1/-1; padding: 40px;">
-                <p>ขออภัย ขณะนี้ยังไม่มีข้อมูลแพทย์ในระบบ</p>
+                <p>{% trans "ขออภัย ขณะนี้ยังไม่มีข้อมูลแพทย์ในระบบ" %}</p>
             </div>
             {% endfor %}
         </div>
@@ -52,10 +52,10 @@
 <section class="section-cta">
     <div class="container">
         <div class="cta-box">
-            <h2>พร้อมนัดหมายกับคุณหมอที่เชี่ยวชาญ?</h2>
-            <p>จองคิวออนไลน์ได้ง่ายๆ ตลอด 24 ชั่วโมง</p>
+            <h2>{% trans "พร้อมนัดหมายกับคุณหมอที่เชี่ยวชาญ?" %}</h2>
+            <p>{% trans "จองคิวออนไลน์ได้ง่ายๆ ตลอด 24 ชั่วโมง" %}</p>
             <a href="{% url 'public_booking' %}" class="btn-hero btn-hero-white">
-                <i class="fas fa-calendar-plus"></i> จองคิวนัดหมายทันที
+                <i class="fas fa-calendar-plus"></i> {% trans "จองคิวนัดหมายทันที" %}
             </a>
         </div>
     </div>

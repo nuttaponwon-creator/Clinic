@@ -1,21 +1,36 @@
 {% extends "base.html" %}
 
-{% block title %}จัดการสัตว์เลี้ยง{% endblock %}
-{% block page_title %}จัดการสัตว์เลี้ยง{% endblock %}
-{% block page_subtitle %}ข้อมูลสัตว์เลี้ยงทั้งหมดในระบบ{% endblock %}
+{% block title %}จัดการสัตว์เลี้ยง / Manage Pets{% endblock %}
+{% block page_title %}จัดการสัตว์เลี้ยง / Manage Pets{% endblock %}
+{% block page_subtitle %}ข้อมูลสัตว์เลี้ยงทั้งหมดในระบบ / All Pets in System{% endblock %}
 
 {% block content %}
 
 <div class="data-card">
   <div class="data-card-header">
-    <div class="toolbar">
+    <div class="toolbar" style="display: flex; gap: 12px; align-items: center;">
       <div class="search-box">
         <i class="fas fa-search"></i>
-        <input type="text" id="searchPets" placeholder="ค้นหาชื่อสัตว์เลี้ยง, เจ้าของ, สายพันธุ์..." onkeyup="filterTable('searchPets', 'petsTable')">
+        <input type="text" id="searchPets" placeholder="ค้นหาชื่อสัตว์เลี้ยง, เจ้าของ, สายพันธุ์... / Search..." onkeyup="filterPets()">
       </div>
+      <div>
+        <select id="speciesFilter" onchange="filterPets()" style="padding: 10px 16px; border: 1px solid #E9ECEF; border-radius: 12px; font-family: inherit; font-size: 14px; outline: none; background: white; color: #2D3436; cursor: pointer; height: 42px;">
+          <option value="">ทุกประเภท / All</option>
+          <option value="สุนัข">สุนัข / Dog</option>
+          <option value="แมว">แมว / Cat</option>
+          <option value="นก">นก / Bird</option>
+          <option value="กระต่าย">กระต่าย / Rabbit</option>
+          <option value="หนู">หนู / Hamster</option>
+          <option value="สัตว์แปลก (Exotic)">Exotic</option>
+        </select>
+      </div>
+      <label class="toggle-container" style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: white; padding: 6px 12px; border-radius: 12px; border: 1px solid #E9ECEF; font-size: 14px; height: 42px;">
+        <input type="checkbox" id="showAllToggle" {% if show_all %}checked{% endif %} onchange="location.href='?show_all=' + (this.checked ? '1' : '0')">
+        แสดงทั้งหมด / Show All
+      </label>
     </div>
     <a href="{% url 'pet_add' %}" class="btn btn-primary">
-      <i class="fas fa-plus"></i> เพิ่มสัตว์เลี้ยง
+      <i class="fas fa-plus"></i> เพิ่มสัตว์เลี้ยง / Add Pet
     </a>
   </div>
   <div class="table-responsive">
@@ -23,50 +38,56 @@
       <thead>
         <tr>
           <th>ID</th>
-          <th>ชื่อ</th>
-          <th>ชนิด</th>
-          <th>สายพันธุ์</th>
-          <th>อายุ</th>
-          <th>เพศ</th>
-          <th>น้ำหนัก (กก.)</th>
-          <th>เจ้าของ</th>
-          <th>เบอร์โทร</th>
-          <th>สัตวแพทย์หลัก</th>
-          <th>สถานะ</th>
-          <th>จัดการ</th>
+          <th>ชื่อ / Name</th>
+          <th>ชนิด / Species</th>
+          <th>สายพันธุ์ / Breed</th>
+          <th>อายุ / Age</th>
+          <th>เพศ / Gender</th>
+          <th>น้ำหนัก / Wt</th>
+          <th>เจ้าของ / Owner</th>
+          <th>เบอร์โทร / Phone</th>
+          <th>สัตวแพทย์ / Vet</th>
+          <th>สถานะ / Status</th>
+          <th>จัดการ / Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for pet in pets %}
-        <tr>
+        <tr class="{% if not pet.is_active %}inactive-row{% endif %}" {% if not pet.is_active %}style="opacity: 0.6; background-color: #f9f9f9;"{% endif %}>
           <td>{{ pet.pet_id }}</td>
-          <td><strong>{{ pet.pet_name }}</strong></td>
+          <td>
+            <strong>{{ pet.pet_name }}</strong>
+            {% if not pet.is_active %}<br><small style="color:red;">(ปิดใช้งาน)</small>{% endif %}
+          </td>
           <td>{{ pet.species }}</td>
           <td>{{ pet.breed }}</td>
           <td>{{ pet.age_display|default:"-" }}</td>
           <td>
             {% if pet.gender == 'M' %}
-              <span class="gender-male"><i class="fas fa-mars"></i> ผู้</span>
+              <span class="gender-male"><i class="fas fa-mars"></i> ผู้ / Male</span>
             {% elif pet.gender == 'F' %}
-              <span class="gender-female"><i class="fas fa-venus"></i> เมีย</span>
+              <span class="gender-female"><i class="fas fa-venus"></i> เมีย / Female</span>
             {% else %}
-              <span class="gender-unknown"><i class="fas fa-genderless"></i> ไม่ระบุ</span>
+              <span class="gender-unknown"><i class="fas fa-genderless"></i> ไม่ระบุ / Unknown</span>
             {% endif %}
           </td>
           <td>{{ pet.weight_kg|default:"-" }}</td>
           <td>{{ pet.owner_name }}</td>
           <td>{{ pet.owner_phone }}</td>
-          <td>{{ pet.primary_vet_name|default:"ยังไม่กำหนด" }}</td>
+          <td>{{ pet.primary_vet_name|default:"-" }}</td>
           <td>
             {% if pet.is_active %}
-              <span class="badge badge-success">ใช้งาน</span>
+              <span class="badge badge-success">ใช้งาน / Active</span>
             {% else %}
-              <span class="badge badge-danger">ปิดใช้งาน</span>
+              <span class="badge badge-danger">ปิดใช้งาน / Inactive</span>
             {% endif %}
           </td>
-          <td>
-            <a href="{% url 'pet_edit' pet.pet_id %}" class="btn btn-outline btn-icon" title="แก้ไข">
+          <td style="display: flex; gap: 5px;">
+            <a href="{% url 'pet_edit' pet.pet_id %}" class="btn btn-outline btn-icon btn-sm" title="แก้ไข">
               <i class="fas fa-edit"></i>
+            </a>
+            <a href="{% url 'toggle_active_status' 'pet' pet.pet_id %}" class="btn {% if pet.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %} btn-icon btn-sm" title="{% if pet.is_active %}ปิดใช้งาน{% else %}เปิดใช้งาน{% endif %}">
+              <i class="fas {% if pet.is_active %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
             </a>
           </td>
         </tr>
@@ -75,9 +96,9 @@
           <td colspan="11">
             <div class="empty-state">
               <i class="fas fa-paw"></i>
-              <p>ยังไม่มีข้อมูลสัตว์เลี้ยง</p>
+              <p>ยังไม่มีข้อมูลสัตว์เลี้ยง / No pet data found</p>
               <a href="{% url 'pet_add' %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> เพิ่มสัตว์เลี้ยงตัวแรก
+                <i class="fas fa-plus"></i> เพิ่มสัตว์เลี้ยงตัวแรก / Add First Pet
               </a>
             </div>
           </td>
@@ -92,6 +113,29 @@
 
 {% block scripts %}
 <script>
+function filterPets() {
+  const textFilter = document.getElementById('searchPets').value.toLowerCase();
+  const speciesFilter = document.getElementById('speciesFilter').value.toLowerCase();
+  const rows = document.getElementById('petsTable').querySelectorAll('tbody tr');
+  
+  rows.forEach(row => {
+    // ข้ามแถวที่ระบุว่า 'ยังไม่มีข้อมูลสัตว์เลี้ยง'
+    if (row.querySelector('.empty-state')) return;
+    
+    // ดึงข้อมูลทั้งแถวมาค้นหาด้วย Text
+    const text = row.textContent.toLowerCase();
+    
+    // ดึงข้อมูลคอลัมน์ชนิด (คอลัมน์ที่ 3 -> index 2)
+    const species = row.cells[2] ? row.cells[2].textContent.toLowerCase().trim() : '';
+    
+    // เช็ค 2 เงื่อนไข
+    const matchText = text.includes(textFilter);
+    const matchSpecies = (speciesFilter === '') || (species === speciesFilter);
+    
+    row.style.display = (matchText && matchSpecies) ? '' : 'none';
+  });
+}
+// เก็บฟังก์ชัน filterTable เดิมไว้เผื่อใช้หน้าอื่น
 function filterTable(inputId, tableId) {
   const filter = document.getElementById(inputId).value.toLowerCase();
   const rows = document.getElementById(tableId).querySelectorAll('tbody tr');

@@ -1,16 +1,16 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
 <html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}มังคุด สัตวแพทย์{% endblock %} — Mangkud Veterinary Clinic</title>
-  <meta name="description" content="คลินิกรักษาสัตว์เลี้ยง มังคุด สัตวแพทย์ บริการดูแลสุขภาพสัตว์เลี้ยงครบวงจร">
+  <title>{% block title %}{% trans "น้องนาวี่ สัตวแพทย์" %}{% endblock %} — NongNavi Clinic</title>
+  <meta name="description" content="{% trans 'คลินิกรักษาสัตว์เลี้ยง น้องนาวี่ สัตวแพทย์ บริการดูแลสุขภาพสัตว์เลี้ยงครบวงจร' %}">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="{% static 'css/public.css' %}">
+  <link rel="stylesheet" href="{% static 'css/public.css' %}?version=999.0">
 </head>
 <body>
 
@@ -21,21 +21,44 @@
         <img src="{% static 'images/LoGoclinicV2.png' %}" alt="NongNavi Clinic" class="nav-logo">
       </a>
       <div class="nav-links">
-        <a href="{% url 'home' %}" class="nav-link {% if active_page == 'home' %}active{% endif %}">หน้าแรก</a>
-        <a href="{% url 'public_services' %}" class="nav-link {% if active_page == 'services' %}active{% endif %}">บริการ</a>
-        <a href="{% url 'public_doctors' %}" class="nav-link {% if active_page == 'doctors' %}active{% endif %}">ทีมแพทย์</a>
+        <a href="{% url 'home' %}" class="nav-link {% if active_page == 'home' %}active{% endif %}">{% trans "หน้าแรก" %}</a>
+        <a href="{% url 'public_services' %}" class="nav-link {% if active_page == 'services' %}active{% endif %}">{% trans "บริการ" %}</a>
+        <a href="{% url 'public_doctors' %}" class="nav-link {% if active_page == 'doctors' %}active{% endif %}">{% trans "ทีมแพทย์" %}</a>
+        <a href="{% url 'public_news' %}" class="nav-link {% if active_page == 'news' %}active{% endif %}">{% trans "ข่าวสาร" %}</a>
         <a href="{% url 'public_booking' %}" class="nav-link btn-booking">
-          <i class="fas fa-calendar-plus"></i> จองคิว
+          <i class="fas fa-calendar-plus"></i> {% trans "จองคิว" %}
         </a>
         
         <div style="width: 1px; height: 20px; background: rgba(0,0,0,0.1); margin: 0 4px;"></div>
 
         {% if user.is_authenticated %}
-          <a href="{% url 'dashboard' %}" class="nav-link"><i class="fas fa-th-large"></i> แดชบอร์ด</a>
-          <a href="{% url 'logout' %}" class="nav-link" style="color: #E17055;"><i class="fas fa-sign-out-alt"></i></a>
+          {% if user.is_staff %}
+            <a href="{% url 'dashboard' %}" class="nav-link"><i class="fas fa-th-large"></i> {% trans "แดชบอร์ด" %}</a>
+          {% else %}
+            <a href="{% url 'my_page' %}" class="nav-link {% if active_page == 'my_page' %}active{% endif %}">
+              <i class="fas fa-user-circle"></i> {% trans "ของฉัน" %}
+            </a>
+          {% endif %}
+          <a href="{% url 'logout' %}" class="nav-link" style="color: #E17055;" title="{% trans 'ออกจากระบบ' %}"><i class="fas fa-sign-out-alt"></i></a>
         {% else %}
-          <a href="{% url 'login' %}" class="nav-link"><i class="fas fa-user-circle"></i> เข้าสู่ระบบ</a>
+          <a href="{% url 'login' %}" class="nav-link"><i class="fas fa-user-circle"></i> {% trans "เข้าสู่ระบบ" %}</a>
         {% endif %}
+
+        {% get_current_language as LANGUAGE_CODE %}
+        <div class="lang-toggle">
+          <form action="{% url 'set_language' %}" method="post" id="lang-form-th">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ request.get_full_path|default:'/' }}">
+            <input name="language" type="hidden" value="th">
+            <button type="submit" class="lang-btn {% if LANGUAGE_CODE == 'th' %}active{% endif %}">TH</button>
+          </form>
+          <form action="{% url 'set_language' %}" method="post" id="lang-form-en">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ request.get_full_path|default:'/' }}">
+            <input name="language" type="hidden" value="en">
+            <button type="submit" class="lang-btn {% if LANGUAGE_CODE == 'en' %}active{% endif %}">EN</button>
+          </form>
+        </div>
       </div>
       <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">
         <i class="fas fa-bars"></i>
@@ -50,23 +73,23 @@
     <div class="container">
       <div class="footer-grid">
         <div class="footer-col">
-          <h3>Mangkud Veterinary Clinic</h3>
-          <p>มังคุด สัตวแพทย์ — ดูแลสัตว์เลี้ยงของคุณอย่างอบอุ่น ด้วยมาตรฐานการแพทย์ที่เชื่อถือได้</p>
+          <h3>NongNavi Clinic</h3>
+          <p>{% trans "น้องนาวี่ สัตวแพทย์ — ดูแลสัตว์เลี้ยงของคุณอย่างอบอุ่น ด้วยมาตรฐานการแพทย์ที่เชื่อถือได้" %}</p>
         </div>
         <div class="footer-col">
-          <h4>ติดต่อเรา</h4>
+          <h4>{% trans "ติดต่อเรา" %}</h4>
           <p><i class="fas fa-phone"></i> 02-xxx-xxxx</p>
           <p><i class="fas fa-envelope"></i> info@mangkudvet.com</p>
           <p><i class="fas fa-globe"></i> www.mangkudvet.com</p>
         </div>
         <div class="footer-col">
-          <h4>เวลาทำการ</h4>
-          <p>จันทร์ - เสาร์: 09:00 - 20:00</p>
-          <p>อาทิตย์: 10:00 - 17:00</p>
+          <h4>{% trans "เวลาทำการ" %}</h4>
+          <p>{% trans "จันทร์ - เสาร์" %}: 09:00 - 20:00</p>
+          <p>{% trans "อาทิตย์" %}: 10:00 - 17:00</p>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2024 Mangkud Veterinary Clinic — Est. 2024</p>
+        <p>&copy; 2024 NongNavi Clinic — Est. 2024</p>
       </div>
     </div>
   </footer>

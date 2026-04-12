@@ -17,6 +17,7 @@
   --radius: 16px;
   --radius-sm: 10px;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
 }
 
 * {
@@ -51,7 +52,7 @@ a {
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 16px 0;
+  padding: 24px 0;
   transition: var(--transition);
   background: transparent;
   /* No background on initial load */
@@ -64,7 +65,7 @@ a {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  padding: 12px 0;
+  padding: 16px 0;
 }
 
 .nav-container {
@@ -80,16 +81,16 @@ a {
 }
 
 .nav-logo {
-  width: 180px;
-  max-height: 80px;
+  width: 220px;
+  max-height: 100px;
   object-fit: contain;
   transition: var(--transition);
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.08));
 }
 
 .navbar.scrolled .nav-logo {
-  width: 150px;
-  height: auto;
+  width: 180px;
+  max-height: 80px;
 }
 
 .nav-brand-name {
@@ -120,13 +121,13 @@ a {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
 }
 
 .nav-link {
-  padding: 10px 18px;
+  padding: 10px 20px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--primary-dark);
   /* Dark Teal */
@@ -137,6 +138,48 @@ a {
   color: var(--primary-dark);
   background: rgba(0, 131, 143, 0.08);
   /* Light Teal Hover */
+}
+
+.lang-toggle {
+  display: flex;
+  background: #f1f3f5;
+  padding: 4px;
+  border-radius: 20px;
+  margin-left: 10px;
+  border: 1px solid #e9ecef;
+  gap: 2px;
+}
+
+.lang-btn {
+  border: none;
+  background: none;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #636e72;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  min-width: 50px;
+}
+
+.lang-btn.active {
+  background: #ffffff;
+  color: #00838f;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.lang-btn:hover:not(.active) {
+  background: rgba(0,0,0,0.03);
+  color: #2d3436;
+}
+
+.lang-btn:hover:not(.active) {
+  background: rgba(0,0,0,0.05);
 }
 
 .navbar.scrolled .nav-link {
@@ -419,13 +462,13 @@ a {
 .service-card-icon {
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(162, 155, 254, 0.1));
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.15), rgba(162, 155, 254, 0.15));
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 22px;
-  color: var(--primary);
+  color: #2bbbce; /* <-- เปลี่ยนสีไอคอนตรงนี้ครับ */
   margin: 0 auto 16px;
 }
 
@@ -445,12 +488,13 @@ a {
 .service-price {
   font-size: 20px;
   font-weight: 800;
-  color: var(--primary);
+  color: #3a5c70; /* <-- เปลี่ยนสีราคาตรงนี้ครับ (ตอนนี้เป็นสีแดงแบบที่คุณลองแก้มา) */
 }
 
 /* ===== Services Full Page ===== */
 .page-hero {
-  background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+  /* สีพื้นหลังส่วนหัวของหน้าบริการ (ตอนนี้เป็นแบบไล่สี) <-- เปลี่ยนสีตรงนี้ครับ */
+  background: linear-gradient(135deg, #ffffff, #adebf0);
   padding: 140px 0 60px;
   text-align: center;
   color: var(--text-dark);
@@ -492,6 +536,7 @@ a {
 
 .service-card-image {
   height: 180px;
+  /* สีพื้นหลังครึ่งบนของหน้าบริการ (ตอนนี้เป็นแบบไล่สี) <-- เปลี่ยนสีตรงนี้ครับ */
   background: linear-gradient(135deg, var(--primary-light), #B2EBF2);
   display: flex;
   align-items: center;
@@ -533,7 +578,7 @@ a {
 .service-card-footer {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: var(--primary);
+  background: var(--primary-dark);
   color: var(--white);
 }
 
@@ -644,7 +689,7 @@ a {
 }
 
 .booking-form-header {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: linear-gradient(135deg, var(--primary-dark), #2c5f66);
   padding: 28px 32px;
   color: var(--white);
   display: flex;
@@ -673,7 +718,7 @@ a {
 .form-section h3 {
   font-size: 15px;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--primary-dark);
   margin-bottom: 18px;
   display: flex;
   align-items: center;
@@ -897,6 +942,223 @@ select.input-pub {
     grid-template-columns: 1fr;
     gap: 24px;
   }
+}
+
+/* ===== Premium Category Filter Bar ===== */
+.filter-bar-wrapper {
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.filter-btn {
+    padding: 10px 24px;
+    border-radius: 50px;
+    background: var(--white);
+    border: 2.5px solid #F1F3F5;
+    color: var(--text-body);
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-btn i {
+    font-size: 16px;
+    color: var(--primary-dark);
+}
+
+.filter-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.filter-btn.active {
+    background: var(--white);
+    border-color: #0089D1;
+    color: #0089D1;
+    box-shadow: 0 4px 15px rgba(0, 137, 209, 0.15);
+}
+
+.filter-btn.active i {
+    color: #0089D1;
+}
+
+/* ===== Premium News Card Redesign ===== */
+.premium-news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.premium-news-card {
+    background: var(--white);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    transition: var(--transition);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+}
+
+.premium-news-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+}
+
+.news-img-container {
+    height: 240px;
+    position: relative;
+    overflow: hidden;
+}
+
+.news-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.premium-news-card:hover .news-img-container img {
+    transform: scale(1.08);
+}
+
+.news-badge {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--primary-dark);
+    backdrop-filter: blur(4px);
+}
+
+.news-content {
+    padding: 28px;
+    flex-grow: 1;
+}
+
+.news-date {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.news-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    line-height: 1.4;
+    margin-bottom: 16px;
+}
+
+.news-desc {
+    font-size: 15px;
+    color: var(--text-body);
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* ===== Premium Service Card Redesign ===== */
+.premium-service-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 35px 30px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    transition: var(--transition);
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.premium-service-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary-light);
+    box-shadow: 0 20px 50px rgba(0, 137, 209, 0.1);
+}
+
+.svc-icon-box {
+    width: 80px;
+    height: 80px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, var(--bg-light), var(--primary-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+}
+
+.svc-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.svc-desc {
+    font-size: 14.5px;
+    color: var(--text-body);
+    line-height: 1.6;
+}
+
+.svc-footer {
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-top: 10px;
+}
+
+.svc-price-tag {
+    background: rgba(0, 137, 209, 0.06);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-weight: 800;
+    color: #0089D1;
+    font-size: 18px;
+}
+
+.svc-price-tag small {
+    font-size: 11px;
+    text-transform: uppercase;
+    margin-right: 4px;
+    opacity: 0.7;
+}
+
+.btn-book-premium {
+    background: #0089D1;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.btn-book-premium:hover {
+    background: #0076B4;
+    box-shadow: 0 6px 20px rgba(0, 137, 209, 0.3);
 }
 
 /* ===== Doctors Layout ===== */

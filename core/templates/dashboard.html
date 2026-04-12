@@ -1,50 +1,74 @@
 {% extends "base.html" %}
 
-{% block title %}แดชบอร์ด{% endblock %}
-{% block page_title %}แดชบอร์ด{% endblock %}
-{% block page_subtitle %}ภาพรวมข้อมูลคลินิกสัตว์เลี้ยง{% endblock %}
+{% block title %}แดชบอร์ด / Dashboard{% endblock %}
+{% block page_title %}แดชบอร์ด / Dashboard{% endblock %}
+{% block page_subtitle %}ภาพรวมข้อมูลคลินิกสัตว์เลี้ยง / Pet Clinic Overview{% endblock %}
 
 {% block content %}
 
-<!-- Stat Cards -->
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-icon purple"><i class="fas fa-paw"></i></div>
-    <div class="stat-info">
-      <h3>{{ total_pets }}</h3>
-      <p>สัตว์เลี้ยงทั้งหมด</p>
+<!-- ===== Welcome Banner ===== -->
+<div class="db-welcome">
+  <div class="db-welcome-left">
+    <h2>สวัสดีครับ/ค่ะ, {{ user_full_name }} 👋</h2>
+    <p>ยินดีต้อนรับเข้าสู่ระบบจัดการคลินิกน้องนาวี่</p>
+    <div class="db-appt-pill">
+      <i class="fas fa-calendar-check"></i>
+      วันนี้มีนัดหมาย {{ total_appointments }} รายการที่กำลังจะมาถึง
     </div>
   </div>
-  <div class="stat-card">
-    <div class="stat-icon teal"><i class="fas fa-users"></i></div>
-    <div class="stat-info">
-      <h3>{{ total_owners }}</h3>
-      <p>เจ้าของสัตว์</p>
-    </div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon green"><i class="fas fa-user-md"></i></div>
-    <div class="stat-info">
-      <h3>{{ total_vets }}</h3>
-      <p>สัตวแพทย์</p>
-    </div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon orange"><i class="fas fa-calendar-check"></i></div>
-    <div class="stat-info">
-      <h3>{{ total_appointments }}</h3>
-      <p>นัดหมายที่กำลังมา</p>
-    </div>
+  <div class="db-welcome-right">
+    <div class="db-welcome-date">วันนี้วันที่ / Today</div>
+    <div class="db-welcome-dateval">{% now "j F Y" %}</div>
   </div>
 </div>
 
-<!-- Dashboard Grid -->
-<div class="dashboard-grid">
+<!-- ===== Stat Cards (4 Cards) ===== -->
+<div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
+  <a href="{% url 'pet_list' %}" style="text-decoration:none;">
+    <div class="stat-card" style="cursor:pointer;">
+      <div class="stat-icon purple"><i class="fas fa-paw"></i></div>
+      <div class="stat-info">
+        <h3>{{ total_pets }}</h3>
+        <p>สัตว์เลี้ยง / Pets</p>
+      </div>
+    </div>
+  </a>
+  <a href="{% url 'owner_list' %}" style="text-decoration:none;">
+    <div class="stat-card" style="cursor:pointer;">
+      <div class="stat-icon teal"><i class="fas fa-users"></i></div>
+      <div class="stat-info">
+        <h3>{{ total_owners }}</h3>
+        <p>เจ้าของสัตว์ / Owners</p>
+      </div>
+    </div>
+  </a>
+  <a href="{% url 'vet_list' %}" style="text-decoration:none;">
+    <div class="stat-card" style="cursor:pointer;">
+      <div class="stat-icon green"><i class="fas fa-user-md"></i></div>
+      <div class="stat-info">
+        <h3>{{ total_vets }}</h3>
+        <p>สัตวแพทย์ / Vets</p>
+      </div>
+    </div>
+  </a>
+  <a href="{% url 'appointment_list' %}" style="text-decoration:none;">
+    <div class="stat-card" style="cursor:pointer;">
+      <div class="stat-icon orange"><i class="fas fa-calendar-check"></i></div>
+      <div class="stat-info">
+        <h3>{{ total_appointments }}</h3>
+        <p>นัดหมาย / Appts</p>
+      </div>
+    </div>
+  </a>
+</div>
 
-  <!-- นัดหมายที่กำลังจะมาถึง -->
-  <div class="data-card">
+<!-- ===== Main Content Grid ===== -->
+<div style="display: grid; grid-template-columns: 1fr 280px; gap: 24px; margin-bottom: 24px;">
+
+  <!-- Upcoming Appointments -->
+  <div class="data-card" style="margin-bottom: 0;">
     <div class="data-card-header">
-      <h2><i class="fas fa-calendar-alt"></i> นัดหมายที่กำลังมา</h2>
+      <h2><i class="fas fa-calendar-alt"></i> นัดหมายที่กำลังมา / Upcoming Appointments</h2>
       <a href="{% url 'appointment_list' %}" class="btn btn-outline btn-sm">ดูทั้งหมด</a>
     </div>
     <div class="table-responsive">
@@ -55,26 +79,74 @@
             <th>สัตว์เลี้ยง</th>
             <th>เจ้าของ</th>
             <th>สัตวแพทย์</th>
+            <th style="width:70px;">จัดการ</th>
           </tr>
         </thead>
         <tbody>
           {% for appt in upcoming_appointments %}
           <tr>
-            <td>{{ appt.appt_datetime|date:"d/m/Y H:i" }}</td>
-            <td><strong>{{ appt.pet_name }}</strong></td>
-            <td>{{ appt.owner_name }}</td>
-            <td>{{ appt.vet_name }}</td>
+            <td>
+              <div style="font-weight:600; font-size:13px;">{{ appt.appt_datetime|date:"d/m/Y" }}</div>
+              <div style="font-size:12px; color: var(--text-secondary);">{{ appt.appt_datetime|date:"H:i" }} น.</div>
+            </td>
+            <td>
+              <strong>{{ appt.pet_name }}</strong>
+              {% if appt.pet_gender == 'M' %}
+                <i class="fas fa-mars" style="color:#0984e3; margin-left:4px; font-size:11px;"></i>
+              {% elif appt.pet_gender == 'F' %}
+                <i class="fas fa-venus" style="color:#e84393; margin-left:4px; font-size:11px;"></i>
+              {% endif %}
+            </td>
+            <td style="font-size:13px;">{{ appt.owner_name }}</td>
+            <td>
+              {% if appt.vet_name %}
+                <span style="font-size:12px;">{{ appt.vet_name }}</span>
+              {% else %}
+                <span class="badge badge-warning" style="font-size:10px;">รอมอบหมาย</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'record_treatment' appt.appt_id %}" class="btn btn-sm btn-primary" title="บันทึกการรักษา" style="padding:5px 10px; font-size:11px;">
+                <i class="fas fa-notes-medical"></i>
+              </a>
+            </td>
           </tr>
           {% empty %}
-          <tr><td colspan="4" class="empty-state"><p>ไม่มีนัดหมายที่กำลังจะมาถึง</p></td></tr>
+          <tr><td colspan="5" class="empty-state"><p>ไม่มีนัดหมายที่กำลังจะมาถึง</p></td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- วัคซีนใกล้ครบกำหนด -->
-  <div class="data-card">
+  <!-- Vets On Duty -->
+  <div class="data-card" style="margin-bottom: 0;">
+    <div class="data-card-header">
+      <h2 style="font-size:15px;"><i class="fas fa-user-clock"></i> หมอประจำการ</h2>
+      <span class="badge badge-success" style="font-size:11px;">{{ active_vets|length }} On Duty</span>
+    </div>
+    <div style="padding: 12px 14px;">
+      {% for vet in active_vets %}
+      <div class="vet-duty-item">
+        <div class="vet-duty-avatar">{{ vet.name|slice:":1"|upper }}</div>
+        <div>
+          <div class="vet-duty-name">{{ vet.name }}</div>
+          <div class="vet-duty-spec">{{ vet.specialization|default:"สัตวแพทย์ทั่วไป" }}</div>
+        </div>
+      </div>
+      {% empty %}
+      <p style="font-size:12px; color: var(--text-light); text-align:center; padding: 20px 0;">ไม่มีหมอประจำการ</p>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== Bottom Row: Vaccines + Low Stock ===== -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+
+  <!-- Vaccines Due Soon -->
+  <div class="data-card" style="margin-bottom:0;">
     <div class="data-card-header">
       <h2><i class="fas fa-syringe"></i> วัคซีนใกล้ครบกำหนด</h2>
     </div>
@@ -92,26 +164,26 @@
           {% for vac in vaccine_due_soon %}
           <tr>
             <td><strong>{{ vac.pet_name }}</strong></td>
-            <td>{{ vac.vaccine_name }}</td>
-            <td>{{ vac.next_due_date|date:"d/m/Y" }}</td>
+            <td style="font-size:12px;">{{ vac.vaccine_name }}</td>
+            <td style="font-size:12px;">{{ vac.next_due_date|date:"d/m/Y" }}</td>
             <td>
               {% if vac.days_until_due <= 7 %}
-                <span class="badge badge-danger">{{ vac.days_until_due }} วัน</span>
+                <span class="badge badge-danger">{{ vac.days_until_due }}วัน</span>
               {% else %}
-                <span class="badge badge-warning">{{ vac.days_until_due }} วัน</span>
+                <span class="badge badge-warning">{{ vac.days_until_due }}วัน</span>
               {% endif %}
             </td>
           </tr>
           {% empty %}
-          <tr><td colspan="4" class="empty-state"><p>ไม่มีวัคซีนใกล้ครบกำหนด</p></td></tr>
+          <tr><td colspan="4" class="empty-state"><p>ไม่มีวัคซีนใกล้ครบกำหนด ✅</p></td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- ยาใกล้หมด -->
-  <div class="data-card full-width">
+  <!-- Low Stock Medicines -->
+  <div class="data-card" style="margin-bottom:0;">
     <div class="data-card-header">
       <h2><i class="fas fa-pills"></i> ยาที่สต็อกต่ำ</h2>
     </div>
@@ -120,8 +192,6 @@
         <thead>
           <tr>
             <th>ชื่อยา</th>
-            <th>ประเภท</th>
-            <th>หน่วย</th>
             <th>คงเหลือ</th>
             <th>ขั้นต่ำ</th>
             <th>ขาด</th>
@@ -130,15 +200,13 @@
         <tbody>
           {% for med in low_stock_medicine %}
           <tr>
-            <td><strong>{{ med.name }}</strong></td>
-            <td>{{ med.type }}</td>
-            <td>{{ med.unit }}</td>
+            <td><strong style="font-size:13px;">{{ med.name }}</strong></td>
             <td><span class="badge badge-danger">{{ med.stock_qty }}</span></td>
-            <td>{{ med.min_stock_qty }}</td>
+            <td style="font-size:12px; color: var(--text-secondary);">{{ med.min_stock_qty }}</td>
             <td><span class="badge badge-danger">-{{ med.shortage_qty }}</span></td>
           </tr>
           {% empty %}
-          <tr><td colspan="6" class="empty-state"><p>สต็อกยาปกติทั้งหมด 🎉</p></td></tr>
+          <tr><td colspan="4" class="empty-state"><p>สต็อกยาปกติทั้งหมด ✅</p></td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -147,4 +215,19 @@
 
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* Animate stat cards on load */
+document.querySelectorAll('.stat-card').forEach((card, i) => {
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(20px)';
+  setTimeout(() => {
+    card.style.transition = 'all 0.4s cubic-bezier(0.4,0,0.2,1)';
+    card.style.opacity = '1';
+    card.style.transform = 'translateY(0)';
+  }, i * 80);
+});
+</script>
 {% endblock %}

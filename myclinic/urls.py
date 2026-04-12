@@ -20,6 +20,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
 
+    path('i18n/', include('django.conf.urls.i18n')),
     # Core app routes (หน้าเว็บ + API)
     path('', include('core.urls')),
 ]

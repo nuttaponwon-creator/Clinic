@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}เพิ่มข่าวสาร / Add News{% endblock %}
+{% block page_title %}เพิ่มข่าวสารใหม่ / Add New News Post{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-section">
+            <div class="section-title">
+                <i class="fas fa-edit"></i>
+                <span>หัวข้อและเนื้อหา (ภาษาไทย) / Content (TH)</span>
+            </div>
+            <div class="form-group">
+                <label>หัวข้อข่าว / Title (TH) <span class="required">*</span></label>
+                <input type="text" name="title_th" class="form-control" required placeholder="เช่น โปรโมชันสงกรานต์ 2567">
+            </div>
+            <div class="form-group">
+                <label>เนื้อหาข่าว / Content (TH) <span class="required">*</span></label>
+                <textarea name="content_th" class="form-control" rows="10" required placeholder="ระบุรายละเอียดข่าวสาร..."></textarea>
+                <div class="form-group">
+            </div>
+            <div class="form-group">
+                <label>หมวดหมู่ / Category <span class="required">*</span></label>
+                <select name="category" class="form-control" required>
+                    <option value="โปรโมชั่น">โปรโมชั่น / Promotion</option>
+                    <option value="กิจกรรม">กิจกรรม / Activity</option>
+                    <option value="สาระน่ารู้">สาระน่ารู้ / Knowledge</option>
+                    <option value="ทั่วไป" selected>ทั่วไป / General</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="section-title">
+                <i class="fas fa-image"></i>
+                <span>รูปภาพประกอบ / Media</span>
+            </div>
+            <div class="form-group">
+                <label>URL รูปภาพ / Image URL</label>
+                <input type="url" name="image_url" class="form-control" placeholder="https://example.com/image.jpg" id="imgUrlInput" oninput="previewImage()">
+                <small class="text-muted" style="display: block; margin-top: 5px;">* รองรับลิงก์รูปภาพจากภายนอกทุกรูปแบบ</small>
+            </div>
+            <div id="imgPreview" style="margin-top: 15px; display: none; text-align: center; border: 1px dashed #ccc; padding: 10px; border-radius: 12px;">
+                <p style="font-size: 11px; color: #666; margin-bottom: 5px;">ตัวอย่างรูปภาพ / Image Preview</p>
+                <img src="" id="previewTarget" style="max-height: 200px; border-radius: 8px;">
+            </div>
+        </div>
+
+        <div class="form-actions" style="background: white; padding: 20px; border-radius: var(--radius); border: 1px solid #edf2f7;">
+            <button type="submit" class="btn btn-primary btn-lg" style="flex: 2; padding: 15px;">
+                <i class="fas fa-save"></i> เผยแพร่ข่าวสาร / Publish News
+            </button>
+            <a href="{% url 'admin_news_list' %}" class="btn btn-outline" style="flex: 1;">ยกเลิก / Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+function previewImage() {
+    const url = document.getElementById('imgUrlInput').value;
+    const previewDiv = document.getElementById('imgPreview');
+    const previewImg = document.getElementById('previewTarget');
+
+    if (url) {
+        previewImg.src = url;
+        previewDiv.style.display = 'block';
+    } else {
+        previewDiv.style.display = 'none';
+        previewImg.src = '';
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,345 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: myclinic\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-12 11:15+0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# ===== Navbar & General =====
+msgid "น้องนาวี่ สัตวแพทย์"
+msgstr "NongNavi Clinic"
+
+msgid "หน้าแรก"
+msgstr "Home"
+
+msgid "บริการ"
+msgstr "Services"
+
+msgid "ทีมแพทย์"
+msgstr "Doctors"
+
+msgid "จองคิว"
+msgstr "Appointment"
+
+msgid "แดชบอร์ด"
+msgstr "Dashboard"
+
+msgid "ของฉัน"
+msgstr "My Profile"
+
+msgid "ออกจากระบบ"
+msgstr "Logout"
+
+msgid "เข้าสู่ระบบ"
+msgstr "Login"
+
+msgid "ติดต่อเรา"
+msgstr "Contact Us"
+
+msgid "เวลาทำการ"
+msgstr "Opening Hours"
+
+msgid "จันทร์ - เสาร์"
+msgstr "Mon - Sat"
+
+msgid "อาทิตย์"
+msgstr "Sun"
+
+# ===== Home Page =====
+msgid "ยินดีต้อนรับสู่ น้องนาวี่ สัตวแพทย์"
+msgstr "Welcome to NongNavi Clinic"
+
+msgid "ดูแลสัตว์เลี้ยง<br>ด้วย<span class=\"text-gradient\">ความรักและมาตรฐาน</span>"
+msgstr "Caring for your pets <br>with <span class=\"text-gradient\">Love and Standards</span>"
+
+msgid "ให้แอดมิน \"น้องนาวี่\" และทีมสัตวแพทย์ของเรา ดูแลสุขภาพสัตว์เลี้ยงของคุณอย่างใกล้ชิด บริการครบวงจร ตรวจรักษา วัคซีน และผ่าตัด"
+msgstr "Let \"NongNavi\" and our veterinary team look after your pets closely. We offer full medical services, check-ups, vaccines, and surgery."
+
+msgid "จองคิวนัดหมาย"
+msgstr "Book Appointment"
+
+msgid "ดูบริการทั้งหมด"
+msgstr "View All Services"
+
+msgid "บริการดูแลสัตว์เลี้ยงของคุณ"
+msgstr "Your pet care service"
+
+msgid "ทำไมต้องเลือก"
+msgstr "Why Choose"
+
+msgid "เราพร้อมดูแลสัตว์เลี้ยงของคุณอย่างดีที่สุด"
+msgstr "We are ready to provide the best care for your pets."
+
+msgid "ทีมสัตวแพทย์ผู้เชี่ยวชาญ"
+msgstr "Expert Veterinary Team"
+
+msgid "สัตวแพทย์ที่มีใบอนุญาตและประสบการณ์ พร้อมให้คำปรึกษาและรักษาอย่างมืออาชีพ"
+msgstr "Licensed and experienced veterinarians ready to provide professional consultation and treatment."
+
+msgid "อุปกรณ์ทันสมัย"
+msgstr "Modern Equipment"
+
+msgid "เครื่องมือและอุปกรณ์การแพทย์ที่ทันสมัย ได้มาตรฐาน เพื่อการวินิจฉัยที่แม่นยำ"
+msgstr "Modern and standard medical tools for accurate diagnosis."
+
+msgid "ดูแลด้วยความรัก"
+msgstr "Care with Love"
+
+msgid "เราเข้าใจว่าสัตว์เลี้ยงคือสมาชิกในครอบครัว จึงดูแลอย่างอ่อนโยนเหมือนลูกของเราเอง"
+msgstr "We understand that pets are family members, so we care for them as gently as our own children."
+
+msgid "เปิดบริการทุกวัน"
+msgstr "Open Every Day"
+
+msgid "เปิดให้บริการทุกวัน จันทร์-เสาร์ 09:00-20:00 น. และอาทิตย์ 10:00-17:00 น."
+msgstr "Open daily: Mon-Sat 9:00 AM - 8:00 PM and Sun 10:00 AM - 5:00 PM."
+
+msgid "บริการของเรา"
+msgstr "Our Services"
+
+msgid "บริการดูแลสุขภาพสัตว์เลี้ยงครบวงจร"
+msgstr "Comprehensive pet healthcare services."
+
+msgid "พร้อมให้เราดูแลสัตว์เลี้ยงของคุณ?"
+msgstr "Ready for us to take care of your pet?"
+
+msgid "จองคิวนัดหมายออนไลน์ได้ง่ายๆ เลือกวัน เวลา และบริการที่ต้องการ"
+msgstr "Book your appointment online easily. Choose your preferred date, time, and service."
+
+msgid "จองคิวเลย"
+msgstr "Book Now"
+
+# ===== Auth pages =====
+msgid "เพื่อเข้าใช้ Clinic"
+msgstr "To Access Clinic"
+
+msgid "ชื่อผู้ใช้"
+msgstr "Username"
+
+msgid "รหัสผ่าน"
+msgstr "Password"
+
+msgid "ยังไม่มีบัญชี?"
+msgstr "Don't have an account?"
+
+msgid "สมัครสมาชิก"
+msgstr "Register"
+
+msgid "กลับหน้าแรก"
+msgstr "Back to Home"
+
+msgid "สร้างบัญชีเพื่อเข้าใช้ระบบจัดการคลินิก"
+msgstr "Create an account to access the clinic system"
+
+msgid "ชื่อ"
+msgstr "First Name"
+
+msgid "นามสกุล"
+msgstr "Last Name"
+
+msgid "อีเมล"
+msgstr "Email"
+
+msgid "เบอร์โทรศัพท์"
+msgstr "Phone Number"
+
+msgid "ยืนยันรหัสผ่าน"
+msgstr "Confirm Password"
+
+msgid "มีบัญชีอยู่แล้ว?"
+msgstr "Already have an account?"
+
+# ===== My Page =====
+msgid "สมาชิกคลินิก"
+msgstr "Clinic Member"
+
+msgid "สัตว์เลี้ยง"
+msgstr "Pets"
+
+msgid "สัตว์เลี้ยงของฉัน"
+msgstr "My Pets"
+
+msgid "ผู้"
+msgstr "Male"
+
+msgid "เมีย"
+msgstr "Female"
+
+msgid "ไม่ระบุเพศ"
+msgstr "Unspecified Gender"
+
+msgid "กก."
+msgstr "kg"
+
+msgid "ปิดการใช้งาน"
+msgstr "Deactivated"
+
+msgid "ยังไม่มีข้อมูลสัตว์เลี้ยง"
+msgstr "No pet data yet"
+
+msgid "เริ่มต้นด้วยการจองคิวครั้งแรก"
+msgstr "Start by making your first appointment"
+
+msgid "ระบบจะผูกข้อมูลสัตว์เลี้ยงเข้ากับ account ของคุณโดยอัตโนมัติครับ"
+msgstr "The system will automatically link pet data to your account."
+
+msgid "นัดหมายล่าสุด"
+msgstr "Latest Appointments"
+
+msgid "วันที่"
+msgstr "Date"
+
+msgid "สัตวแพทย์"
+msgstr "Veterinarian"
+
+msgid "สาเหตุ"
+msgstr "Reason"
+
+msgid "สถานะ"
+msgstr "Status"
+
+msgid "รอยืนยัน"
+msgstr "Pending"
+
+msgid "ยืนยันแล้ว"
+msgstr "Confirmed"
+
+msgid "เสร็จสิ้น"
+msgstr "Completed"
+
+msgid "ยกเลิก"
+msgstr "Cancelled"
+
+msgid "ยังไม่มีประวัตินัดหมาย"
+msgstr "No appointment history"
+
+msgid "ประวัติวัคซีนล่าสุด"
+msgstr "Latest Vaccine History"
+
+msgid "ยังไม่มีประวัติวัคซีน"
+msgstr "No vaccine history"
+
+msgid "จองคิวใหม่"
+msgstr "Book New Appointment"
+
+# ===== Booking Page =====
+msgid "กรอกข้อมูลเพื่อนัดหมายเข้าใช้บริการ ทางคลินิกจะติดต่อกลับเพื่อยืนยันนัดหมาย"
+msgstr "Please fill in the information for your appointment. We will contact you to confirm."
+
+msgid "นัดหมายสำเร็จ!"
+msgstr "Appointment Successful!"
+
+msgid "ทางคลินิกได้รับข้อมูลการนัดหมายของคุณแล้ว"
+msgstr "The clinic has received your appointment request."
+
+msgid "เราจะติดต่อกลับเพื่อยืนยันนัดหมายภายใน 24 ชั่วโมง"
+msgstr "We will contact you to confirm within 24 hours."
+
+msgid "ข้อมูลการนัดหมาย"
+msgstr "Appointment Details"
+
+msgid "ข้อมูลเจ้าของ"
+msgstr "Owner Information"
+
+msgid "ดึงข้อมูลจาก account ของคุณอัตโนมัติ"
+msgstr "Automatically retrieved from your account"
+
+msgid "ถ้าเคยมาใช้บริการแล้ว ใส่เบอร์เดิมเพื่อดึงข้อมูลอัตโนมัติ"
+msgstr "If you've visited before, use the same phone number to sync your data."
+
+msgid "ข้อมูลสัตว์เลี้ยง"
+msgstr "Pet Information"
+
+msgid "ชื่อสัตว์เลี้ยง"
+msgstr "Pet Name"
+
+msgid "ชนิดสัตว์"
+msgstr "Species"
+
+msgid "เลือกชนิดสัตว์"
+msgstr "Select Species"
+
+msgid "สายพันธุ์"
+msgstr "Breed"
+
+msgid "ไม่ระบุ / ไม่ทราบ"
+msgstr "Unspecified / Unknown"
+
+msgid "เลือกบริการและวันนัด"
+msgstr "Select Service & Date"
+
+msgid "บริการที่ต้องการ"
+msgstr "Required Service"
+
+msgid "เลือกบริการ"
+msgstr "Select Service"
+
+msgid "ไม่ระบุ (ให้คลินิกจัด)"
+msgstr "Unspecified (Clinic Assigned)"
+
+msgid "วันที่-เวลาที่ต้องการ"
+msgstr "Preferred Date & Time"
+
+msgid "กรุณาเลือกเวลา"
+msgstr "Please select time"
+
+msgid "ก่อนเที่ยง"
+msgstr "Morning"
+
+msgid "หลังเที่ยง"
+msgstr "Afternoon"
+
+msgid "ช่วงเย็น"
+msgstr "Evening"
+
+msgid "อาการ / เหตุผลนัด"
+msgstr "Symptoms / Reason for Appointment"
+
+msgid "ยืนยันนัดหมาย"
+msgstr "Confirm Appointment"
+
+# ===== Doctors & Services Pages =====
+msgid "ดูแลสัตว์เลี้ยงแสนรักของคุณด้วยความใส่ใจและมาตรฐานการรักษาที่วางใจได้"
+msgstr "Taking care of your beloved pets with heart and reliable medical standards."
+
+msgid "สพ.ญ."
+msgstr "Dr."
+
+msgid "ทำนัด"
+msgstr "Book Now"
+
+msgid "รายละเอียด"
+msgstr "Details"
+
+msgid "ขออภัย ขณะนี้ยังไม่มีข้อมูลแพทย์ในระบบ"
+msgstr "Sorry, no veterinarian data available at the moment."
+
+msgid "พร้อมนัดหมายกับคุณหมอที่เชี่ยวชาญ?"
+msgstr "Ready to book with our expert doctors?"
+
+msgid "จองคิวออนไลน์ได้ง่ายๆ ตลอด 24 ชั่วโมง"
+msgstr "Book online easily 24/7."
+
+msgid "จองคิวนัดหมายทันที"
+msgstr "Book Appointment Now"
+
+msgid "บริการดูแลสุขภาพสัตว์เลี้ยงครบวงจร ด้วยทีมสัตวแพทย์มืออาชีพ"
+msgstr "Full-range pet healthcare services by a professional veterinary team."
+
+msgid "ราคาเริ่มต้น"
+msgstr "Starting Price"
+
+msgid "กำลังอัปเดตข้อมูลบริการ กรุณาติดต่อคลินิกโดยตรง"
+msgstr "Updating service information. Please contact the clinic directly."
+
+msgid "สนใจบริการไหน? จองคิวได้เลย!"
+msgstr "Interested in our services? Book now!"
+
+msgid "เลือกบริการ กรอกข้อมูล แล้วรอรับการยืนยันจากทางคลินิก"
+msgstr "Select a service, fill in your details, and wait for clinic confirmation."

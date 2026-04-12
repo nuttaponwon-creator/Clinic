@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}จัดการยา / Manage Medicines{% endblock %}
+{% block page_title %}จัดการยาและเวชภัณฑ์ / Manage Medicines & Supplies{% endblock %}
+{% block page_subtitle %}รายการยา สต็อก และราคายา / Medicine List, Stock, and Pricing{% endblock %}
+
+{% block content %}
+
+<!-- ===== สต็อกยา ===== -->
+<div class="data-card">
+  <div class="data-card-header">
+    <h2><i class="fas fa-pills"></i> รายการยาในสต็อก / Medicines in Stock</h2>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchMedicine" placeholder="ค้นหายา... / Search..." onkeyup="filterTable('searchMedicine', 'medicineTable')">
+      </div>
+      <label class="toggle-container" style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: white; padding: 6px 12px; border-radius: 12px; border: 1px solid #E9ECEF; font-size: 14px; height: 42px; white-space: nowrap;">
+        <input type="checkbox" id="showAllToggle" {% if show_all %}checked{% endif %} onchange="location.href='?show_all=' + (this.checked ? '1' : '0')">
+        แสดงทั้งหมด / ALL
+      </label>
+      {% if user_role == 'admin' %}
+      <button class="btn btn-primary" onclick="toggleSection('addMedicineSection')">
+        <i class="fas fa-plus"></i> เพิ่มยา / Add
+      </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ===== ฟอร์มเพิ่มยาใหม่ (ซ่อนอยู่) ===== -->
+  <div id="addMedicineSection" class="collapsible-section" style="display:none;">
+    <div style="padding: 24px; border-bottom: 2px solid #F1F3F5; background: #FAFBFE;">
+      <h3 style="font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 16px;">
+        <i class="fas fa-plus-circle"></i> เพิ่มยาชนิดใหม่ / Add New Medicine Type
+      </h3>
+      <form method="POST" action="{% url 'medicine_add' %}">
+        {% csrf_token %}
+        <div class="form-grid">
+          <div class="form-group">
+            <label>ชื่อยา/เวชภัณฑ์ / Name <span class="required">*</span></label>
+            <input type="text" name="name" class="form-control" placeholder="เช่น Paracetamol / e.g. Paracetamol" required>
+          </div>
+          <div class="form-group">
+            <label>ประเภท / Type</label>
+            <input type="text" name="type" class="form-control" placeholder="เช่น Tablet, Syrup / e.g. Tablet">
+          </div>
+          <div class="form-group">
+            <label>ผู้ผลิต / Manufacturer</label>
+            <input type="text" name="manufacturer" class="form-control" placeholder="เช่น Pfizer / e.g. Pfizer">
+          </div>
+          <div class="form-group">
+            <label>หน่วยนับ / Unit</label>
+            <input type="text" name="unit" class="form-control" placeholder="เช่น เม็ด, ขวด / e.g. Tablet, Bottle">
+          </div>
+          <div class="form-group">
+            <label>จำนวนเริ่มต้น / Initial Qty <span class="required">*</span></label>
+            <input type="number" name="stock_qty" class="form-control" value="0" min="0" required>
+          </div>
+          <div class="form-group">
+            <label>จุดสั่งซื้อ / Min Stock</label>
+            <input type="number" name="min_stock_qty" class="form-control" value="10" min="0">
+          </div>
+          <div class="form-group">
+            <label>ราคาต่อหน่วย / Price per Unit</label>
+            <input type="number" step="0.01" name="price_per_unit" class="form-control" value="0.00">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-save"></i> บันทึกยาใหม่ / Save New Medicine
+          </button>
+          <button type="button" class="btn btn-outline" onclick="toggleSection('addMedicineSection')">ยกเลิก / Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== ตารางรายการยา ===== -->
+  <div class="table-responsive">
+    <table id="medicineTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>ชื่อยา / Name</th>
+          <th>ประเภท / Type</th>
+          <th>ผู้ผลิต / Manufacturer</th>
+          <th>สต็อก / Stock</th>
+          <th>หน่วย / Unit</th>
+          <th>ราคา / Price</th>
+          <th>สถานะ / Status</th>
+          <th>เติมสต็อก / Restock</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in medicines %}
+        <tr class="{% if not m.is_active %}inactive-row{% endif %}" {% if not m.is_active %}style="opacity: 0.6; background-color: #f9f9f9;"{% endif %}>
+          <td>{{ m.medicine_id }}</td>
+          <td>
+            <strong>{{ m.name }}</strong>
+            {% if not m.is_active %}<br><small style="color:red;">(ปิดใช้งาน)</small>{% endif %}
+          </td>
+          <td>{{ m.type|default:"-" }}</td>
+          <td>{{ m.manufacturer|default:"-" }}</td>
+          <td>
+            {% if m.stock_qty <= m.min_stock_qty %}
+              <span class="badge badge-danger"><i class="fas fa-exclamation-triangle"></i> {{ m.stock_qty }}</span>
+            {% elif m.stock_qty <= m.min_stock_qty|add:"20" %}
+              <span class="badge badge-warning">{{ m.stock_qty }}</span>
+            {% else %}
+              <span class="badge badge-success">{{ m.stock_qty }}</span>
+            {% endif %}
+          </td>
+          <td>{{ m.unit|default:"-" }}</td>
+          <td>฿{{ m.price_per_unit|floatformat:2 }}</td>
+          <td>
+            {% if m.is_active %}
+              <span class="badge badge-success">ใช้งาน / Active</span>
+            {% else %}
+              <span class="badge badge-danger">ปิดใช้งาน / Inactive</span>
+            {% endif %}
+          </td>
+          <td style="display:flex; gap:6px; align-items:center;">
+            {% if user_role == 'admin' %}
+            <form method="POST" action="{% url 'medicine_restock' %}" style="display:flex; gap:4px; align-items:center;">
+              {% csrf_token %}
+              <input type="hidden" name="medicine_id" value="{{ m.medicine_id }}">
+              <input type="number" name="qty" class="form-control" style="width:60px; padding:4px 8px; font-size:12px;" value="10" min="1">
+              <button type="submit" class="btn btn-success btn-sm" title="เติมสต็อก">
+                <i class="fas fa-plus"></i>
+              </button>
+            </form>
+            {% endif %}
+            <a href="{% url 'toggle_active_status' 'medicine' m.medicine_id %}" class="btn {% if m.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %} btn-sm" title="{% if m.is_active %}ปิดใช้งาน{% else %}เปิดใช้งาน{% endif %}">
+              <i class="fas {% if m.is_active %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9">
+            <div class="empty-state">
+              <i class="fas fa-pills"></i>
+              <p>ยังไม่มีข้อมูลยาในระบบ / No medicine data found</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleSection(id) {
+  var el = document.getElementById(id);
+  if (el.style.display === "none") {
+    el.style.display = "block";
+  } else {
+    el.style.display = "none";
+  }
+}
+
+function filterTable(inputId, tableId) {
+  const filter = document.getElementById(inputId).value.toLowerCase();
+  const rows = document.getElementById(tableId).querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(filter) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

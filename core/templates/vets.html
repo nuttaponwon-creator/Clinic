@@ -1,38 +1,52 @@
 {% extends "base.html" %}
 
-{% block title %}สัตวแพทย์{% endblock %}
-{% block page_title %}ข้อมูลสัตวแพทย์{% endblock %}
-{% block page_subtitle %}ข้อมูลสัตวแพทย์และภาระงานทั้งหมด{% endblock %}
+{% block title %}สัตวแพทย์ / Veterinarians{% endblock %}
+{% block page_title %}ข้อมูลสัตวแพทย์ / Vet Information{% endblock %}
+{% block page_subtitle %}ข้อมูลสัตวแพทย์และภาระงานทั้งหมด / Vets data and workload summary{% endblock %}
 
 {% block content %}
 
 <div class="data-card">
   <div class="data-card-header">
-    <h2><i class="fas fa-user-md"></i> รายชื่อสัตวแพทย์</h2>
-    <div class="toolbar">
+    <div class="toolbar" style="display: flex; gap: 15px; align-items: center;">
       <div class="search-box">
         <i class="fas fa-search"></i>
-        <input type="text" id="searchVets" placeholder="ค้นหาชื่อ, ความเชี่ยวชาญ..." onkeyup="filterTable('searchVets', 'vetsTable')">
+        <input type="text" id="searchVets" placeholder="ค้นหาชื่อ, ความเชี่ยวชาญ... / Search..." onkeyup="filterTable('searchVets', 'vetsTable')">
       </div>
+      <label class="toggle-container" style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: white; padding: 6px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;">
+        <input type="checkbox" id="showAllToggle" {% if show_all %}checked{% endif %} onchange="location.href='?show_all=' + (this.checked ? '1' : '0')">
+        แสดงทั้งหมด / Show All
+      </label>
     </div>
+    {% if user_role == 'admin' %}
+    <a href="{% url 'vet_add' %}" class="btn btn-primary">
+      <i class="fas fa-plus"></i> เพิ่มสัตวแพทย์ / Add Vet
+    </a>
+    {% endif %}
   </div>
   <div class="table-responsive">
     <table id="vetsTable">
       <thead>
         <tr>
           <th>ID</th>
-          <th>ชื่อ-นามสกุล</th>
-          <th>ความเชี่ยวชาญ</th>
-          <th>จำนวนสัตว์ดูแล</th>
-          <th>สถานะ</th>
+          <th>ชื่อ-นามสกุล / Name</th>
+          <th>ความเชี่ยวชาญ / Specialization</th>
+          <th>เบอร์โทร / Phone</th>
+          <th>จำนวนสัตว์ดูแล / Pets</th>
+          <th>สถานะ / Status</th>
+          {% if user_role == 'admin' %}<th>จัดการ / Actions</th>{% endif %}
         </tr>
       </thead>
       <tbody>
         {% for vet in vets %}
-        <tr>
+        <tr class="{% if not vet.is_active %}inactive-row{% endif %}" {% if not vet.is_active %}style="opacity: 0.6; background-color: #f9f9f9;"{% endif %}>
           <td>{{ vet.vet_id }}</td>
-          <td><strong>{{ vet.vet_name }}</strong></td>
+          <td>
+            <strong>{{ vet.vet_name }}</strong>
+            {% if not vet.is_active %}<br><small style="color:red;">(ปิดใช้งาน)</small>{% endif %}
+          </td>
           <td>{{ vet.specialization|default:"-" }}</td>
+          <td>{{ vet.phone|default:"-" }}</td>
           <td>
             <span class="badge badge-purple">
               <i class="fas fa-paw"></i> {{ vet.active_pet_count }} ตัว
@@ -40,18 +54,33 @@
           </td>
           <td>
             {% if vet.is_active %}
-              <span class="badge badge-success">ปฏิบัติงาน</span>
+              <span class="badge badge-success">ปฏิบัติงาน / On Duty</span>
             {% else %}
-              <span class="badge badge-danger">หยุดงาน</span>
+              <span class="badge badge-danger">หยุดงาน / Off Duty</span>
             {% endif %}
           </td>
+          {% if user_role == 'admin' %}
+          <td style="display: flex; gap: 5px;">
+            <a href="{% url 'vet_edit' vet.vet_id %}" class="btn btn-outline btn-icon btn-sm" title="แก้ไข">
+              <i class="fas fa-edit"></i>
+            </a>
+            <a href="{% url 'toggle_active_status' 'vet' vet.vet_id %}" class="btn {% if vet.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %} btn-icon btn-sm" title="{% if vet.is_active %}ปิดใช้งาน{% else %}เปิดใช้งาน{% endif %}">
+              <i class="fas {% if vet.is_active %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
+            </a>
+          </td>
+          {% endif %}
         </tr>
         {% empty %}
         <tr>
-          <td colspan="5">
+          <td colspan="7">
             <div class="empty-state">
               <i class="fas fa-user-md"></i>
-              <p>ยังไม่มีข้อมูลสัตวแพทย์</p>
+              <p>ยังไม่มีข้อมูลสัตวแพทย์ / No vet data found</p>
+              {% if user_role == 'admin' %}
+              <a href="{% url 'vet_add' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> เพิ่มสัตวแพทย์คนแรก / Add First Vet
+              </a>
+              {% endif %}
             </div>
           </td>
         </tr>
@@ -75,3 +104,4 @@ function filterTable(inputId, tableId) {
 }
 </script>
 {% endblock %}
+

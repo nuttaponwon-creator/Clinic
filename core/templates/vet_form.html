@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{% if vet %}แก้ไขสัตวแพทย์ / Edit Vet{% else %}เพิ่มสัตวแพทย์ / Add Vet{% endif %}{% endblock %}
+{% block page_title %}{% if vet %}แก้ไขข้อมูลสัตวแพทย์ / Edit Vet Info{% else %}เพิ่มสัตวแพทย์ใหม่ / Add New Vet{% endif %}{% endblock %}
+{% block page_subtitle %}{% if vet %}แก้ไขข้อมูล: {{ vet.first_name }} {{ vet.last_name }}{% else %}กรอกข้อมูลสัตวแพทย์ใหม่ / Fill in new veterinary info{% endif %}{% endblock %}
+
+{% block content %}
+
+<div class="data-card">
+  <div class="data-card-header">
+    <h2><i class="fas fa-user-md"></i> {% if vet %}แก้ไขข้อมูล / Edit Info{% else %}เพิ่มสัตวแพทย์ / Add Vet{% endif %}</h2>
+    <a href="{% url 'vet_list' %}" class="btn btn-outline btn-sm">
+      <i class="fas fa-arrow-left"></i> กลับ / Back
+    </a>
+  </div>
+  <div style="padding: 24px;">
+    <form method="POST" action="">
+      {% csrf_token %}
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>ชื่อ / First Name <span class="required">*</span></label>
+          <input type="text" name="first_name" class="form-control" placeholder="เช่น สมศักดิ์ / e.g. Somsak" value="{{ vet.first_name|default:'' }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>นามสกุล / Last Name <span class="required">*</span></label>
+          <input type="text" name="last_name" class="form-control" placeholder="เช่น รักษ์สัตว์ / e.g. Raksaat" value="{{ vet.last_name|default:'' }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>ความเชี่ยวชาญ / Specialization</label>
+          <input type="text" name="specialization" class="form-control" placeholder="เช่น ศัลยกรรม / e.g. Surgery" value="{{ vet.specialization|default:'' }}">
+        </div>
+
+        <div class="form-group">
+          <label>เบอร์โทร / Phone</label>
+          <input type="text" name="phone" class="form-control" placeholder="เช่น 0812345678" value="{{ vet.phone|default:'' }}">
+        </div>
+
+        <div class="form-group full-width">
+          <label>อีเมล / Email</label>
+          <input type="email" name="email" class="form-control" placeholder="เช่น doctor@clinic.com" value="{{ vet.email|default:'' }}">
+        </div>
+
+        {% if vet %}
+        <div class="form-group full-width">
+          <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <input type="checkbox" name="is_active" {% if vet.is_active %}checked{% endif %} style="width: 18px; height: 18px;">
+            <span>ปฏิบัติงานอยู่ / Is Active</span>
+          </label>
+        </div>
+        {% endif %}
+
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save"></i> {% if vet %}บันทึกการแก้ไข / Save Changes{% else %}เพิ่มสัตวแพทย์ / Add Vet{% endif %}
+        </button>
+        <a href="{% url 'vet_list' %}" class="btn btn-outline">ยกเลิก / Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

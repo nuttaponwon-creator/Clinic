@@ -1,69 +1,77 @@
 {% extends "base.html" %}
 
-{% block title %}จัดการวัคซีน{% endblock %}
-{% block page_title %}จัดการวัคซีน{% endblock %}
-{% block page_subtitle %}รายการวัคซีน สต็อก และประวัติการฉีด{% endblock %}
+{% block title %}จัดการวัคซีน / Manage Vaccines{% endblock %}
+{% block page_title %}จัดการวัคซีน / Manage Vaccines{% endblock %}
+{% block page_subtitle %}รายการวัคซีน สต็อก และประวัติ / Vaccine List, Stock, and Records{% endblock %}
 
 {% block content %}
 
 <!-- ===== สต็อกวัคซีน ===== -->
 <div class="data-card">
   <div class="data-card-header">
-    <h2><i class="fas fa-syringe"></i> รายการวัคซีนในสต็อก</h2>
+    <h2><i class="fas fa-syringe"></i> รายการวัคซีนในสต็อก / Vaccines in Stock</h2>
     <div style="display:flex; gap:8px; align-items:center;">
       <div class="search-box">
         <i class="fas fa-search"></i>
-        <input type="text" id="searchVaccine" placeholder="ค้นหาวัคซีน..." onkeyup="filterTable('searchVaccine', 'vaccineTable')">
+        <input type="text" id="searchVaccine" placeholder="ค้นหาวัคซีน... / Search..." onkeyup="filterTable('searchVaccine', 'vaccineTable')">
       </div>
+      <label class="toggle-container" style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: white; padding: 6px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px; white-space: nowrap;">
+        <input type="checkbox" id="showAllToggle" {% if show_all %}checked{% endif %} onchange="location.href='?show_all=' + (this.checked ? '1' : '0')">
+        แสดงทั้งหมด / ALL
+      </label>
+      {% if user_role == 'admin' %}
       <button class="btn btn-primary" onclick="toggleSection('addVaccineSection')">
-        <i class="fas fa-plus"></i> เพิ่มวัคซีนใหม่
+        <i class="fas fa-plus"></i> เพิ่มวัคซีน / Add
       </button>
+      {% endif %}
     </div>
   </div>
 
   <!-- ===== ฟอร์มเพิ่มวัคซีนใหม่ (ซ่อนอยู่) ===== -->
+  {% if user_role == 'admin' %}
   <div id="addVaccineSection" class="collapsible-section" style="display:none;">
     <div style="padding: 24px; border-bottom: 2px solid #F1F3F5; background: #FAFBFE;">
       <h3 style="font-size: 15px; font-weight: 700; color: var(--primary); margin-bottom: 16px;">
-        <i class="fas fa-plus-circle"></i> เพิ่มวัคซีนชนิดใหม่
+        <i class="fas fa-plus-circle"></i> เพิ่มวัคซีนชนิดใหม่ / Add New Vaccine Type
       </h3>
       <form method="POST" action="{% url 'vaccine_add' %}">
         {% csrf_token %}
         <div class="form-grid">
           <div class="form-group">
-            <label>ชื่อวัคซีน <span class="required">*</span></label>
-            <input type="text" name="name" class="form-control" placeholder="เช่น Rabies Vaccine" required>
+            <label>ชื่อวัคซีน / Vaccine Name <span class="required">*</span></label>
+            <input type="text" name="name" class="form-control" placeholder="เช่น Rabies Vaccine / e.g. Rabies" required>
           </div>
           <div class="form-group">
-            <label>ผู้ผลิต</label>
-            <input type="text" name="manufacturer" class="form-control" placeholder="เช่น Zoetis, MSD">
+            <label>ผู้ผลิต / Manufacturer</label>
+            <input type="text" name="manufacturer" class="form-control" placeholder="เช่น Zoetis, MSD / e.g. Zoetis">
           </div>
           <div class="form-group">
-            <label>โรคที่ป้องกัน</label>
-            <input type="text" name="target_disease" class="form-control" placeholder="เช่น พิษสุนัขบ้า">
+            <label>โรคที่ป้องกัน / Target Disease</label>
+            <input type="text" name="target_disease" class="form-control" placeholder="เช่น พิษสุนัขบ้า / e.g. Rabies">
           </div>
           <div class="form-group">
-            <label>ระยะเวลาคุ้มครอง (เดือน)</label>
-            <input type="number" name="validity_months" class="form-control" placeholder="เช่น 12">
+            <label>ระยะเวลาคุ้มครอง / Validity (Months)</label>
+            <input type="number" name="validity_months" class="form-control" placeholder="เช่น 12 / e.g. 12">
           </div>
           <div class="form-group">
-            <label>จำนวนเริ่มต้น <span class="required">*</span></label>
+            <label>จำนวนเริ่มต้น / Initial Qty <span class="required">*</span></label>
             <input type="number" name="stock_qty" class="form-control" value="0" min="0" required>
           </div>
           <div class="form-group">
-            <label>อุณหภูมิเก็บรักษา</label>
-            <input type="text" name="storage_temp" class="form-control" placeholder="เช่น 2-8°C">
+            <label>อุณหภูมิเก็บรักษา / Storage Temp</label>
+            <input type="text" name="storage_temp" class="form-control" placeholder="เช่น 2-8°C / e.g. 2-8°C">
           </div>
         </div>
         <div class="form-actions">
           <button type="submit" class="btn btn-success">
-            <i class="fas fa-save"></i> บันทึกวัคซีนใหม่
+            <i class="fas fa-save"></i> บันทึกวัคซีนใหม่ / Save New Vaccine
           </button>
-          <button type="button" class="btn btn-outline" onclick="toggleSection('addVaccineSection')">ยกเลิก</button>
+          <button type="button" class="btn btn-outline" onclick="toggleSection('addVaccineSection')">ยกเลิก / Cancel</button>
         </div>
       </form>
     </div>
   </div>
+  {% endif %}
 
   <!-- ===== ตารางวัคซีน ===== -->
   <div class="table-responsive">
@@ -71,21 +79,24 @@
       <thead>
         <tr>
           <th>ID</th>
-          <th>ชื่อวัคซีน</th>
-          <th>ผู้ผลิต</th>
-          <th>โรคที่ป้องกัน</th>
-          <th>คุ้มครอง</th>
-          <th>อุณหภูมิ</th>
-          <th>สต็อก</th>
-          <th>สถานะ</th>
-          <th>เติมสต็อก</th>
+          <th>ชื่อวัคซีน / Vaccine</th>
+          <th>ผู้ผลิต / Manufacturer</th>
+          <th>โรคที่ป้องกัน / Disease</th>
+          <th>คุ้มครอง / Valid</th>
+          <th>อุณหภูมิ / Storage</th>
+          <th>สต็อก / Stock</th>
+          <th>สถานะ / Status</th>
+          <th>เติมสต็อก / Restock</th>
         </tr>
       </thead>
       <tbody>
         {% for v in vaccines %}
-        <tr>
+        <tr class="{% if not v.is_active %}inactive-row{% endif %}" {% if not v.is_active %}style="opacity: 0.6; background-color: #f9f9f9;"{% endif %}>
           <td>{{ v.vaccine_id }}</td>
-          <td><strong>{{ v.name }}</strong></td>
+          <td>
+            <strong>{{ v.name }}</strong>
+            {% if not v.is_active %}<br><small style="color:red;">(ปิดใช้งาน)</small>{% endif %}
+          </td>
           <td>{{ v.manufacturer|default:"-" }}</td>
           <td>{{ v.target_disease|default:"-" }}</td>
           <td>{% if v.validity_months %}{{ v.validity_months }} เดือน{% else %}-{% endif %}</td>
@@ -101,20 +112,25 @@
           </td>
           <td>
             {% if v.is_active %}
-              <span class="badge badge-success">ใช้งาน</span>
+              <span class="badge badge-success">ใช้งาน / Active</span>
             {% else %}
-              <span class="badge badge-danger">ปิดใช้งาน</span>
+              <span class="badge badge-danger">ปิดใช้งาน / Inactive</span>
             {% endif %}
           </td>
-          <td>
-            <form method="POST" action="{% url 'vaccine_restock' %}" style="display:flex; gap:6px; align-items:center;">
+          <td style="display:flex; gap:6px; align-items:center;">
+            {% if user_role == 'admin' %}
+            <form method="POST" action="{% url 'vaccine_restock' %}" style="display:flex; gap:4px; align-items:center;">
               {% csrf_token %}
               <input type="hidden" name="vaccine_id" value="{{ v.vaccine_id }}">
-              <input type="number" name="qty" class="form-control" style="width:80px; padding:6px 10px; font-size:13px;" value="10" min="1">
+              <input type="number" name="qty" class="form-control" style="width:60px; padding:4px 8px; font-size:12px;" value="10" min="1">
               <button type="submit" class="btn btn-success btn-sm" title="เติมสต็อก">
                 <i class="fas fa-plus"></i>
               </button>
             </form>
+            {% endif %}
+            <a href="{% url 'toggle_active_status' 'vaccine' v.vaccine_id %}" class="btn {% if v.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %} btn-sm" title="{% if v.is_active %}ปิดใช้งาน{% else %}เปิดใช้งาน{% endif %}">
+              <i class="fas {% if v.is_active %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
+            </a>
           </td>
         </tr>
         {% empty %}
@@ -122,7 +138,7 @@
           <td colspan="9">
             <div class="empty-state">
               <i class="fas fa-syringe"></i>
-              <p>ยังไม่มีข้อมูลวัคซีน</p>
+              <p>ยังไม่มีข้อมูลวัคซีน / No vaccine data found</p>
             </div>
           </td>
         </tr>
@@ -135,7 +151,7 @@
 <!-- ===== บันทึกฉีดวัคซีน ===== -->
 <div class="data-card">
   <div class="data-card-header">
-    <h2><i class="fas fa-file-medical"></i> บันทึกฉีดวัคซีน</h2>
+    <h2><i class="fas fa-file-medical"></i> บันทึกฉีดวัคซีน / Record Vaccination</h2>
   </div>
   <div style="padding: 24px;">
     <form method="POST" action="{% url 'vaccine_record_add' %}">
@@ -143,9 +159,9 @@
       <div class="form-grid">
 
         <div class="form-group">
-          <label>สัตว์เลี้ยง <span class="required">*</span></label>
+          <label>สัตว์เลี้ยง / Pet <span class="required">*</span></label>
           <select name="pet_id" class="form-control" required>
-            <option value="">-- เลือกสัตว์เลี้ยง --</option>
+            <option value="">-- เลือกสัตว์เลี้ยง / Select Pet --</option>
             {% for pet in pets %}
               <option value="{{ pet.pet_id }}">{{ pet.name }} ({{ pet.owner_name }})</option>
             {% endfor %}
@@ -153,19 +169,19 @@
         </div>
 
         <div class="form-group">
-          <label>วัคซีน <span class="required">*</span></label>
+          <label>วัคซีน / Vaccine <span class="required">*</span></label>
           <select name="vaccine_id" class="form-control" required>
-            <option value="">-- เลือกวัคซีน --</option>
+            <option value="">-- เลือกวัคซีน / Select Vaccine --</option>
             {% for v in active_vaccines %}
-              <option value="{{ v.vaccine_id }}">{{ v.name }} (คงเหลือ {{ v.stock_qty }})</option>
+              <option value="{{ v.vaccine_id }}">{{ v.name }} (คงเหลือ / Stock: {{ v.stock_qty }})</option>
             {% endfor %}
           </select>
         </div>
 
         <div class="form-group">
-          <label>สัตวแพทย์ผู้ฉีด <span class="required">*</span></label>
+          <label>สัตวแพทย์ผู้ฉีด / Veterinary <span class="required">*</span></label>
           <select name="vet_id" class="form-control" required>
-            <option value="">-- เลือกสัตวแพทย์ --</option>
+            <option value="">-- เลือกสัตวแพทย์ / Select Vet --</option>
             {% for vet in vets %}
               <option value="{{ vet.vet_id }}">{{ vet.first_name }} {{ vet.last_name }}</option>
             {% endfor %}
@@ -173,30 +189,26 @@
         </div>
 
         <div class="form-group">
-          <label>วันที่ฉีด <span class="required">*</span></label>
+          <label>วันที่ฉีด / Given Date <span class="required">*</span></label>
           <input type="date" name="given_date" class="form-control" required>
         </div>
 
         <div class="form-group">
-          <label>วันครบกำหนดฉีดครั้งถัดไป</label>
+          <label>วันครบกำหนดฉีดครั้งถัดไป / Next Due Date</label>
           <input type="date" name="next_due_date" class="form-control">
         </div>
 
-        <div class="form-group">
-          <label>Batch No.</label>
-          <input type="text" name="batch_no" class="form-control" placeholder="เลข Lot/Batch">
-        </div>
 
         <div class="form-group full-width">
-          <label>หมายเหตุ</label>
-          <textarea name="notes" class="form-control" rows="2" placeholder="หมายเหตุเพิ่มเติม..."></textarea>
+          <label>หมายเหตุ / Notes</label>
+          <textarea name="notes" class="form-control" rows="2" placeholder="หมายเหตุเพิ่มเติม... / Comments..."></textarea>
         </div>
 
       </div>
 
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">
-          <i class="fas fa-save"></i> บันทึกการฉีดวัคซีน
+          <i class="fas fa-save"></i> บันทึกการฉีดวัคซีน / Save Vaccination
         </button>
       </div>
     </form>
@@ -206,19 +218,19 @@
 <!-- ===== ประวัติฉีดวัคซีนล่าสุด ===== -->
 <div class="data-card">
   <div class="data-card-header">
-    <h2><i class="fas fa-history"></i> ประวัติฉีดวัคซีนล่าสุด</h2>
+    <h2><i class="fas fa-history"></i> ประวัติฉีดวัคซีนล่าสุด / Recent Vaccination History</h2>
   </div>
   <div class="table-responsive">
     <table>
       <thead>
         <tr>
-          <th>วันที่ฉีด</th>
-          <th>สัตว์เลี้ยง</th>
-          <th>เจ้าของ</th>
-          <th>วัคซีน</th>
-          <th>Batch No.</th>
-          <th>สัตวแพทย์</th>
-          <th>ครบกำหนดถัดไป</th>
+          <th>วันที่ฉีด / Date</th>
+          <th>สัตว์เลี้ยง / Pet</th>
+          <th>เจ้าของ / Owner</th>
+          <th>วัคซีน / Vaccine</th>
+
+          <th>สัตวแพทย์ / Vet</th>
+          <th>ครบกำหนดถัดไป / Next Due</th>
         </tr>
       </thead>
       <tbody>
@@ -228,7 +240,7 @@
           <td>{{ r.pet_name }}</td>
           <td>{{ r.owner_name }}</td>
           <td><span class="badge badge-purple">{{ r.vaccine_name }}</span></td>
-          <td>{{ r.batch_no|default:"-" }}</td>
+
           <td>{{ r.vet_name }}</td>
           <td>
             {% if r.next_due_date %}
@@ -247,10 +259,10 @@
         </tr>
         {% empty %}
         <tr>
-          <td colspan="7">
+          <td colspan="6">
             <div class="empty-state">
               <i class="fas fa-history"></i>
-              <p>ยังไม่มีประวัติการฉีดวัคซีน</p>
+              <p>ยังไม่มีประวัติการฉีดวัคซีน / No vaccination records found</p>
             </div>
           </td>
         </tr>

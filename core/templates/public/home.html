@@ -1,7 +1,7 @@
 {% extends "public/base_public.html" %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}หน้าแรก{% endblock %}
+{% block title %}{% trans "หน้าแรก" %}{% endblock %}
 
 {% block content %}
 
@@ -71,16 +71,15 @@
   <div class="hero-overlay"></div>
   <div class="container hero-content hero-layout">
     <div class="hero-text-side">
-      <div class="hero-badge">🐾 ยินดีต้อนรับสู่ มังคุด สัตวแพทย์</div>
-      <h1 class="hero-title">ดูแลสัตว์เลี้ยง<br>ด้วย<span class="text-gradient">ความรักและมาตรฐาน</span></h1>
-      <p class="hero-subtitle">ให้แอดมิน <strong>"น้องนาวี่"</strong> และทีมสัตวแพทย์ของเรา
-        ดูแลสุขภาพสัตว์เลี้ยงของคุณอย่างใกล้ชิด บริการครบวงจร ตรวจรักษา วัคซีน และผ่าตัด</p>
+      <div class="hero-badge">🐾 {% trans "ยินดีต้อนรับสู่ น้องนาวี่ สัตวแพทย์" %}</div>
+      <h1 class="hero-title">{% blocktrans trimmed %}ดูแลสัตว์เลี้ยง<br>ด้วย<span class="text-gradient">ความรักและมาตรฐาน</span>{% endblocktrans %}</h1>
+      <p class="hero-subtitle">{% trans 'ให้แอดมิน "น้องนาวี่" และทีมสัตวแพทย์ของเรา ดูแลสุขภาพสัตว์เลี้ยงของคุณอย่างใกล้ชิด บริการครบวงจร ตรวจรักษา วัคซีน และผ่าตัด' %}</p>
       <div class="hero-actions">
         <a href="{% url 'public_booking' %}" class="btn-hero btn-hero-primary">
-          <i class="fas fa-calendar-plus"></i> จองคิวนัดหมาย
+          <i class="fas fa-calendar-plus"></i> {% trans "จองคิวนัดหมาย" %}
         </a>
         <a href="{% url 'public_services' %}" class="btn-hero btn-hero-outline">
-          <i class="fas fa-stethoscope"></i> ดูบริการทั้งหมด
+          <i class="fas fa-stethoscope"></i> {% trans "ดูบริการทั้งหมด" %}
         </a>
       </div>
     </div>
@@ -95,37 +94,37 @@
 <section class="section section-features">
   <div class="container">
     <div class="section-header">
-      <h2>ทำไมต้องเลือก<span class="text-gradient"> มังคุด สัตวแพทย์</span></h2>
-      <p>เราพร้อมดูแลสัตว์เลี้ยงของคุณอย่างดีที่สุด</p>
+      <h2>{% trans "ทำไมต้องเลือก" %}<span class="text-gradient"> {% trans "น้องนาวี่ สัตวแพทย์" %}</span></h2>
+      <p>{% trans "เราพร้อมดูแลสัตว์เลี้ยงของคุณอย่างดีที่สุด" %}</p>
     </div>
     <div class="features-grid">
       <div class="feature-card">
         <div class="feature-icon" style="background: rgba(108,92,231,0.1); color: #6C5CE7;">
           <i class="fas fa-user-md"></i>
         </div>
-        <h3>ทีมสัตวแพทย์ผู้เชี่ยวชาญ</h3>
-        <p>สัตวแพทย์ที่มีใบอนุญาตและประสบการณ์ พร้อมให้คำปรึกษาและรักษาอย่างมืออาชีพ</p>
+        <h3>{% trans "ทีมสัตวแพทย์ผู้เชี่ยวชาญ" %}</h3>
+        <p>{% trans "สัตวแพทย์ที่มีใบอนุญาตและประสบการณ์ พร้อมให้คำปรึกษาและรักษาอย่างมืออาชีพ" %}</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon" style="background: rgba(0,206,201,0.1); color: #00CEC9;">
           <i class="fas fa-heartbeat"></i>
         </div>
-        <h3>อุปกรณ์ทันสมัย</h3>
-        <p>เครื่องมือและอุปกรณ์การแพทย์ที่ทันสมัย ได้มาตรฐาน เพื่อการวินิจฉัยที่แม่นยำ</p>
+        <h3>{% trans "อุปกรณ์ทันสมัย" %}</h3>
+        <p>{% trans "เครื่องมือและอุปกรณ์การแพทย์ที่ทันสมัย ได้มาตรฐาน เพื่อการวินิจฉัยที่แม่นยำ" %}</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon" style="background: rgba(253,121,168,0.1); color: #FD79A8;">
           <i class="fas fa-hand-holding-heart"></i>
         </div>
-        <h3>ดูแลด้วยความรัก</h3>
-        <p>เราเข้าใจว่าสัตว์เลี้ยงคือสมาชิกในครอบครัว จึงดูแลอย่างอ่อนโยนเหมือนลูกของเราเอง</p>
+        <h3>{% trans "ดูแลด้วยความรัก" %}</h3>
+        <p>{% trans "เราเข้าใจว่าสัตว์เลี้ยงคือสมาชิกในครอบครัว จึงดูแลอย่างอ่อนโยนเหมือนลูกของเราเอง" %}</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon" style="background: rgba(0,184,148,0.1); color: #00B894;">
           <i class="fas fa-clock"></i>
         </div>
-        <h3>เปิดบริการทุกวัน</h3>
-        <p>เปิดให้บริการทุกวัน จันทร์-เสาร์ 09:00-20:00 น. และอาทิตย์ 10:00-17:00 น.</p>
+        <h3>{% trans "เปิดบริการทุกวัน" %}</h3>
+        <p>{% trans "เปิดให้บริการทุกวัน จันทร์-เสาร์ 09:00-20:00 น. และอาทิตย์ 10:00-17:00 น." %}</p>
       </div>
     </div>
   </div>
@@ -135,8 +134,8 @@
 <section class="section section-services-preview">
   <div class="container">
     <div class="section-header">
-      <h2>บริการของเรา</h2>
-      <p>บริการดูแลสุขภาพสัตว์เลี้ยงครบวงจร</p>
+      <h2>{% trans "บริการของเรา" %}</h2>
+      <p>{% trans "บริการดูแลสุขภาพสัตว์เลี้ยงครบวงจร" %}</p>
     </div>
     <div class="services-grid">
       {% for svc in services %}
@@ -159,14 +158,20 @@
           {% endif %}
         </div>
         <h3>{{ svc.service_name }}</h3>
-        <p>{{ svc.description|default:"บริการดูแลสัตว์เลี้ยงของคุณ" }}</p>
+        <p>
+          {% if svc.description %}
+            {{ svc.description }}
+          {% else %}
+            {% trans "บริการดูแลสัตว์เลี้ยงของคุณ" %}
+          {% endif %}
+        </p>
         <div class="service-price">฿{{ svc.price|floatformat:0 }}</div>
       </div>
       {% endfor %}
     </div>
     <div style="text-align: center; margin-top: 32px;">
       <a href="{% url 'public_services' %}" class="btn-hero btn-hero-primary">
-        <i class="fas fa-arrow-right"></i> ดูบริการทั้งหมด
+        <i class="fas fa-arrow-right"></i> {% trans "ดูบริการทั้งหมด" %}
       </a>
     </div>
   </div>
@@ -176,10 +181,10 @@
 <section class="section section-cta">
   <div class="container">
     <div class="cta-box">
-      <h2>พร้อมให้เราดูแลสัตว์เลี้ยงของคุณ?</h2>
-      <p>จองคิวนัดหมายออนไลน์ได้ง่ายๆ เลือกวัน เวลา และบริการที่ต้องการ</p>
+      <h2>{% trans "พร้อมให้เราดูแลสัตว์เลี้ยงของคุณ?" %}</h2>
+      <p>{% trans "จองคิวนัดหมายออนไลน์ได้ง่ายๆ เลือกวัน เวลา และบริการที่ต้องการ" %}</p>
       <a href="{% url 'public_booking' %}" class="btn-hero btn-hero-white">
-        <i class="fas fa-calendar-check"></i> จองคิวเลย
+        <i class="fas fa-calendar-check"></i> {% trans "จองคิวเลย" %}
       </a>
     </div>
   </div>

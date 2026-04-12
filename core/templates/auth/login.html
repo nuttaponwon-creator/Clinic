@@ -1,15 +1,23 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>เข้าสู่ระบบ — มังคุด สัตวแพทย์</title>
+  <title>{% trans "เข้าสู่ระบบ" %} — {% trans "น้องนาวี่ สัตวแพทย์" %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Inter', 'Noto Sans Thai', sans-serif;
       min-height: 100vh;
@@ -20,20 +28,26 @@
       position: relative;
       overflow: hidden;
     }
+
     body::before {
       content: '';
       position: absolute;
-      top: -30%; right: -15%;
-      width: 700px; height: 700px;
-      background: radial-gradient(circle, rgba(108,92,231,0.15) 0%, transparent 70%);
+      top: -30%;
+      right: -15%;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(108, 92, 231, 0.15) 0%, transparent 70%);
       border-radius: 50%;
     }
+
     body::after {
       content: '';
       position: absolute;
-      bottom: -20%; left: -10%;
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, rgba(0,206,201,0.12) 0%, transparent 70%);
+      bottom: -20%;
+      left: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(0, 206, 201, 0.12) 0%, transparent 70%);
       border-radius: 50%;
     }
 
@@ -41,29 +55,33 @@
       position: relative;
       z-index: 2;
       width: 100%;
-      max-width: 420px;
+      max-width: 625px;
       padding: 20px;
     }
 
     .login-card {
-      background: rgba(255,255,255,0.97);
+      background: rgba(255, 255, 255, 0.97);
       border-radius: 20px;
-      padding: 44px 36px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 10px 36px 44px;
+      /* Reduced top padding from 44px to 10px */
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(10px);
     }
 
     .login-header {
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 20px;
+      /* Reduced from 32px */
     }
 
     .login-logo {
-      width: 72px; height: 72px;
-      border-radius: 16px;
+      width: 250px;
+      height: 250px;
       object-fit: contain;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-top: -20px;
+      /* Pull logo a bit higher */
+      margin-bottom: -40px;
+      /* Reduce gap below logo drastically */
     }
 
     .login-header h1 {
@@ -118,11 +136,11 @@
 
     .input-wrapper input:focus {
       border-color: #6C5CE7;
-      box-shadow: 0 0 0 4px rgba(108,92,231,0.1);
+      box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
     }
 
-    .input-wrapper input:focus + i,
-    .input-wrapper input:focus ~ i {
+    .input-wrapper input:focus+i,
+    .input-wrapper input:focus~i {
       color: #6C5CE7;
     }
 
@@ -138,7 +156,7 @@
       font-family: inherit;
       cursor: pointer;
       transition: all 0.3s;
-      box-shadow: 0 4px 15px rgba(108,92,231,0.35);
+      box-shadow: 0 4px 15px rgba(108, 92, 231, 0.35);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -147,7 +165,7 @@
 
     .btn-login:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 25px rgba(108,92,231,0.45);
+      box-shadow: 0 6px 25px rgba(108, 92, 231, 0.45);
     }
 
     .login-footer {
@@ -179,20 +197,27 @@
     }
 
     @keyframes slideIn {
-      from { opacity: 0; transform: translateY(-8px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .alert-danger {
-      background: rgba(225,112,85,0.1);
+      background: rgba(225, 112, 85, 0.1);
       color: #E17055;
-      border: 1px solid rgba(225,112,85,0.2);
+      border: 1px solid rgba(225, 112, 85, 0.2);
     }
 
     .alert-success {
-      background: rgba(0,184,148,0.1);
+      background: rgba(0, 184, 148, 0.1);
       color: #00B894;
-      border: 1px solid rgba(0,184,148,0.2);
+      border: 1px solid rgba(0, 184, 148, 0.2);
     }
 
     .back-home {
@@ -201,24 +226,25 @@
     }
 
     .back-home a {
-      color: rgba(255,255,255,0.5);
+      color: rgba(255, 255, 255, 0.5);
       font-size: 13px;
       text-decoration: none;
     }
 
     .back-home a:hover {
-      color: rgba(255,255,255,0.8);
+      color: rgba(255, 255, 255, 0.8);
     }
   </style>
 </head>
+
 <body>
 
   <div class="login-container">
     <div class="login-card">
       <div class="login-header">
-        <img src="{% static 'images/logo-removebg-preview.png' %}" alt="Mangkud Vet" class="login-logo">
-        <h1>เข้าสู่ระบบ</h1>
-        <p>Mangkud Veterinary Clinic</p>
+        <img src="{% static 'images/LoGoclinicV2.png' %}" alt="NongNavi Clinic" class="login-logo">
+        <h1>{% trans "เข้าสู่ระบบ" %}</h1>
+        <p>{% trans "เพื่อเข้าใช้ Clinic" %}</p>
       </div>
 
       {% if error %}
@@ -237,7 +263,7 @@
         {% csrf_token %}
 
         <div class="form-group">
-          <label>ชื่อผู้ใช้</label>
+          <label>{% trans "ชื่อผู้ใช้" %}</label>
           <div class="input-wrapper">
             <input type="text" name="username" placeholder="Username" required autofocus>
             <i class="fas fa-user"></i>
@@ -245,7 +271,7 @@
         </div>
 
         <div class="form-group">
-          <label>รหัสผ่าน</label>
+          <label>{% trans "รหัสผ่าน" %}</label>
           <div class="input-wrapper">
             <input type="password" name="password" placeholder="Password" required>
             <i class="fas fa-lock"></i>
@@ -253,19 +279,20 @@
         </div>
 
         <button type="submit" class="btn-login">
-          <i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ
+          <i class="fas fa-sign-in-alt"></i> {% trans "เข้าสู่ระบบ" %}
         </button>
       </form>
 
       <div class="login-footer">
-        ยังไม่มีบัญชี? <a href="{% url 'register' %}">สมัครสมาชิก</a>
+        {% trans "ยังไม่มีบัญชี?" %} <a href="{% url 'register' %}">{% trans "สมัครสมาชิก" %}</a>
       </div>
     </div>
 
     <div class="back-home">
-      <a href="{% url 'home' %}"><i class="fas fa-arrow-left"></i> กลับหน้าแรก</a>
+      <a href="{% url 'home' %}"><i class="fas fa-arrow-left"></i> {% trans "กลับหน้าแรก" %}</a>
     </div>
   </div>
 
 </body>
+
 </html>

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}จัดการข่าวสาร / Manage News{% endblock %}
+{% block page_title %}จัดการข่าวสารและกิจกรรม / Manage News & Activities{% endblock %}
+{% block page_subtitle %}ลงข่าวสารล่าสุดให้ลูกค้าของคุณ / Post latest news to your clients{% endblock %}
+
+{% block content %}
+<div class="data-card">
+    <div class="data-card-header">
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchNews" placeholder="ค้นหาหัวข้อข่าว... / Search titles..." onkeyup="filterTable('searchNews', 'newsTable')">
+            </div>
+        </div>
+        <a href="{% url 'news_add' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> เพิ่มข่าวสาร / Add News
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table id="newsTable">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">รูป</th>
+                    <th>วันที่ / Date</th>
+                    <th>หัวข้อข่าว / Title</th>
+                    <th style="width: 100px;">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in news_items %}
+                <tr>
+                    <td>
+                        {% if item.image_url %}
+                            <img src="{{ item.image_url }}" style="width: 50px; height: 50px; border-radius: 8px; object-fit: cover;">
+                        {% else %}
+                            <div style="width: 50px; height: 50px; background: #eee; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #ccc;">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.created_at|date:"d/m/Y H:i" }}</td>
+                    <td><strong>{{ item.title_th }}</strong></td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="confirmDelete('{{ item.news_id }}', '{{ item.title_th|escapejs }}')">
+                            <i class="fas fa-trash"></i> ลบ
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="empty-state">ไม่มีข้อมูลข่าวสาร / No news found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function confirmDelete(id, title) {
+    if (confirm(`คุณต้องการลบข่าว "${title}" ใช่หรือไม่?\n\n* ข้อมูลจะถูกลบถาวร (Delete permanently)`)) {
+        window.location.href = `/admin-panel/news/${id}/delete/`;
+    }
+}
+</script>
+{% endblock %}

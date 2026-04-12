@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Mangkud Vet{% endblock %} — มังคุด สัตวแพทย์</title>
-  <meta name="description" content="ระบบจัดการคลินิก มังคุด สัตวแพทย์ Mangkud Veterinary Clinic">
+  <title>{% block title %}NongNavi Clinic{% endblock %} — น้องนาวี่ สัตวแพทย์</title>
+  <meta name="description" content="ระบบจัดการคลินิก น้องนาวี่ สัตวแพทย์ NongNavi Clinic">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,57 +21,83 @@
 
   <!-- ===== Sidebar ===== -->
   <aside class="sidebar">
-    <div class="sidebar-brand">
-      <img src="{% static 'images/logo-removebg-preview.png' %}" alt="Mangkud Vet Clinic" class="brand-logo">
-      <div class="brand-text">
-        Mangkud Vet
-        <small>มังคุด สัตวแพทย์</small>
+
+
+    <!-- ===== User Profile Card (Top) ===== -->
+    <div class="sidebar-user-card">
+      <!-- Avatar -->
+      <div class="sidebar-avatar">
+        {{ user_full_name|default:user.username|slice:":1"|upper }}
       </div>
+      <!-- Name & Badge -->
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name">{{ user_full_name|default:user.username }}</div>
+        {% if user_role == 'admin' %}
+          <span class="sidebar-badge badge-admin"><i class="fas fa-shield-alt"></i> เจ้าหน้าที่</span>
+        {% elif user_role == 'vet' %}
+          <span class="sidebar-badge badge-vet"><i class="fas fa-stethoscope"></i> สัตวแพทย์</span>
+        {% endif %}
+      </div>
+      <!-- Visit Website Button -->
+      <a href="{% url 'home' %}" class="sidebar-web-btn" title="ไปหน้าเว็บไซต์">
+        <i class="fas fa-globe"></i>
+      </a>
     </div>
 
     <nav class="sidebar-nav">
-      <div class="nav-label">เมนูหลัก</div>
+      <div class="nav-label">เมนูหลัก / Main Menu</div>
 
       <a href="{% url 'dashboard' %}" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
         <i class="fas fa-th-large"></i>
-        แดชบอร์ด
+        แดชบอร์ด / Dashboard
       </a>
 
       <a href="{% url 'pet_list' %}" class="nav-item {% if active_page == 'pets' %}active{% endif %}">
         <i class="fas fa-paw"></i>
-        สัตว์เลี้ยง
+        สัตว์เลี้ยง / Pets
       </a>
 
+      {% if user_role == 'admin' or user_role == 'vet' %}
       <a href="{% url 'owner_list' %}" class="nav-item {% if active_page == 'owners' %}active{% endif %}">
         <i class="fas fa-users"></i>
-        เจ้าของสัตว์
+        เจ้าของสัตว์ / Owners
       </a>
+      {% endif %}
 
       <a href="{% url 'appointment_list' %}" class="nav-item {% if active_page == 'appointments' %}active{% endif %}">
         <i class="fas fa-calendar-check"></i>
-        นัดหมาย
+        นัดหมาย / Appointments
       </a>
 
-      <div class="nav-label">ข้อมูลระบบ</div>
+      {% if user_role == 'admin' %}
+      <div class="nav-label">ข้อมูลระบบ / System Data</div>
 
       <a href="{% url 'vet_list' %}" class="nav-item {% if active_page == 'vets' %}active{% endif %}">
         <i class="fas fa-user-md"></i>
-        สัตวแพทย์
+        สัตวแพทย์ / Vets
       </a>
+      {% endif %}
 
       <a href="{% url 'vaccine_list' %}" class="nav-item {% if active_page == 'vaccines' %}active{% endif %}">
         <i class="fas fa-syringe"></i>
-        วัคซีน
+        วัคซีน / Vaccines
       </a>
 
-      <!-- ===== Logout ===== -->
-      <div style="margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.05);">
-        <div style="padding: 10px 20px; font-size: 13px; font-weight: 600; color: var(--text-body);">
-          <i class="fas fa-user-circle"></i> {{ user.username }}
-        </div>
-        <a href="{% url 'logout' %}" class="nav-item" style="color: #E17055;">
+      <a href="{% url 'medicine_list' %}" class="nav-item {% if active_page == 'medicines' %}active{% endif %}">
+        <i class="fas fa-pills"></i>
+        ยาเวชภัณฑ์ / Medicines
+      </a>
+
+      <a href="{% url 'admin_news_list' %}" class="nav-item {% if active_page == 'news_management' %}active{% endif %}">
+        <i class="fas fa-newspaper"></i>
+        ข่าวสารและกิจกรรม / News
+      </a>
+
+      <!-- Logout at bottom -->
+      <div class="sidebar-logout-wrap">
+        <a href="{% url 'logout' %}" class="nav-item nav-logout">
           <i class="fas fa-sign-out-alt"></i>
-          ออกจากระบบ
+          ออกจากระบบ / Logout
         </a>
       </div>
     </nav>
@@ -83,8 +109,13 @@
     <!-- Header -->
     <header class="header">
       <div class="header-title">
-        <h1>{% block page_title %}แดชบอร์ด{% endblock %}</h1>
-        <p>{% block page_subtitle %}ภาพรวมข้อมูลคลินิก{% endblock %}</p>
+        <h1>{% block page_title %}แดชบอร์ด / Dashboard{% endblock %}</h1>
+        <p>{% block page_subtitle %}ภาพรวมข้อมูลคลินิก / Clinic Overview{% endblock %}</p>
+      </div>
+      <!-- Live Clock -->
+      <div class="header-clock">
+        <i class="fas fa-clock" style="color: var(--primary); margin-right: 8px;"></i>
+        <span id="liveClock" style="font-weight: 600; font-size: 15px; color: var(--text-primary);"></span>
       </div>
     </header>
 
@@ -104,6 +135,21 @@
       {% block content %}{% endblock %}
     </main>
   </div>
+
+  <!-- Live Clock Script -->
+  <script>
+    function updateClock() {
+      const now = new Date();
+      const days = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+      const day = days[now.getDay()];
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('liveClock').textContent = `วัน${day} ${h}:${m}:${s}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
 
   {% block scripts %}{% endblock %}
 </body>

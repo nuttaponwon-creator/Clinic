@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}{% if pet %}แก้ไขสัตว์เลี้ยง{% else %}เพิ่มสัตว์เลี้ยง{% endif %}{% endblock %}
-{% block page_title %}{% if pet %}แก้ไขสัตว์เลี้ยง{% else %}เพิ่มสัตว์เลี้ยงใหม่{% endif %}{% endblock %}
-{% block page_subtitle %}{% if pet %}แก้ไขข้อมูล: {{ pet.name }}{% else %}กรอกข้อมูลสัตว์เลี้ยงตัวใหม่{% endif %}{% endblock %}
+{% block title %}{% if pet %}แก้ไขสัตว์เลี้ยง / Edit Pet{% else %}เพิ่มสัตว์เลี้ยง / Add Pet{% endif %}{% endblock %}
+{% block page_title %}{% if pet %}แก้ไขสัตว์เลี้ยง / Edit Pet{% else %}เพิ่มสัตว์เลี้ยงใหม่ / Add New Pet{% endif %}{% endblock %}
+{% block page_subtitle %}{% if pet %}แก้ไขข้อมูล: {{ pet.name }} / Edit Info: {{ pet.name }}{% else %}กรอกข้อมูลสัตว์เลี้ยงตัวใหม่ / Fill in new pet information{% endif %}{% endblock %}
 
 {% block content %}
 
 <div class="data-card">
   <div class="data-card-header">
-    <h2><i class="fas fa-paw"></i> {% if pet %}แก้ไขข้อมูล{% else %}ข้อมูลสัตว์เลี้ยง{% endif %}</h2>
+    <h2><i class="fas fa-paw"></i> {% if pet %}แก้ไขข้อมูล / Edit Info{% else %}ข้อมูลสัตว์เลี้ยง / Pet Info{% endif %}</h2>
     <a href="{% url 'pet_list' %}" class="btn btn-outline btn-sm">
-      <i class="fas fa-arrow-left"></i> กลับ
+      <i class="fas fa-arrow-left"></i> กลับ / Back
     </a>
   </div>
   <div style="padding: 24px;">
@@ -19,9 +19,9 @@
       <div class="form-grid">
 
         <div class="form-group">
-          <label>เจ้าของ <span class="required">*</span></label>
+          <label>เจ้าของ / Owner <span class="required">*</span></label>
           <select name="owner_id" class="form-control" required>
-            <option value="">-- เลือกเจ้าของ --</option>
+            <option value="">-- เลือกเจ้าของ / Select Owner --</option>
             {% for owner in owners %}
               <option value="{{ owner.owner_id }}" {% if pet and pet.owner_id == owner.owner_id %}selected{% endif %}>
                 {{ owner.first_name }} {{ owner.last_name }} ({{ owner.phone }})
@@ -31,14 +31,14 @@
         </div>
 
         <div class="form-group">
-          <label>ชื่อสัตว์เลี้ยง <span class="required">*</span></label>
-          <input type="text" name="name" class="form-control" placeholder="เช่น บัดดี้, มิ้นท์" value="{{ pet.name|default:'' }}" required>
+          <label>ชื่อสัตว์เลี้ยง / Pet Name <span class="required">*</span></label>
+          <input type="text" name="name" class="form-control" placeholder="เช่น บัดดี้, มิ้นท์ / e.g. Buddy, Mint" value="{{ pet.name|default:'' }}" required>
         </div>
 
         <div class="form-group">
-          <label>ชนิดสัตว์ <span class="required">*</span></label>
+          <label>ชนิดสัตว์ / Species <span class="required">*</span></label>
           <select name="species_id" id="speciesSelect" class="form-control" required onchange="loadBreeds(this.value)">
-            <option value="">-- เลือกชนิดสัตว์ --</option>
+            <option value="">-- เลือกชนิดสัตว์ / Select Species --</option>
             {% for sp in species %}
               <option value="{{ sp.species_id }}" {% if pet and pet.species_id == sp.species_id %}selected{% endif %}>
                 {{ sp.species_name }}
@@ -48,9 +48,9 @@
         </div>
 
         <div class="form-group">
-          <label>สายพันธุ์</label>
+          <label>สายพันธุ์ / Breed</label>
           <select name="breed_id" id="breedSelect" class="form-control">
-            <option value="">-- เลือกสายพันธุ์ (ถ้ามี) --</option>
+            <option value="">-- เลือกสายพันธุ์ (ถ้ามี) / Select Breed (if any) --</option>
             {% for br in breeds %}
               <option value="{{ br.breed_id }}" data-species="{{ br.species_id }}" {% if pet and pet.breed_id == br.breed_id %}selected{% endif %}>
                 {{ br.breed_name }}
@@ -60,36 +60,36 @@
         </div>
 
         <div class="form-group">
-          <label>วันเกิด</label>
+          <label>วันเกิด / Date of Birth</label>
           <input type="date" name="date_of_birth" class="form-control" value="{{ pet.date_of_birth|date:'Y-m-d'|default:'' }}">
         </div>
 
         <div class="form-group">
-          <label>เพศ</label>
+          <label>เพศ / Gender</label>
           <select name="gender" class="form-control">
-            <option value="U" {% if not pet or pet.gender == 'U' %}selected{% endif %}>ไม่ระบุ</option>
-            <option value="M" {% if pet and pet.gender == 'M' %}selected{% endif %}>ผู้ (Male)</option>
-            <option value="F" {% if pet and pet.gender == 'F' %}selected{% endif %}>เมีย (Female)</option>
+            <option value="U" {% if not pet or pet.gender == 'U' %}selected{% endif %}>ไม่ระบุ / Unknown</option>
+            <option value="M" {% if pet and pet.gender == 'M' %}selected{% endif %}>ผู้ / Male</option>
+            <option value="F" {% if pet and pet.gender == 'F' %}selected{% endif %}>เมีย / Female</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>น้ำหนัก (กก.)</label>
-          <input type="number" step="0.01" name="weight_kg" class="form-control" placeholder="เช่น 5.50" value="{{ pet.weight_kg|default:'' }}">
+          <label>น้ำหนัก / Weight (kg)</label>
+          <input type="number" step="0.01" name="weight_kg" class="form-control" placeholder="เช่น 5.50 / e.g. 5.50" value="{{ pet.weight_kg|default:'' }}">
         </div>
 
         <div class="form-group">
-          <label>ทำหมันแล้ว</label>
+          <label>ทำหมันแล้ว / Neutered?</label>
           <select name="is_neutered" class="form-control">
-            <option value="0" {% if not pet or not pet.is_neutered %}selected{% endif %}>ยังไม่ทำหมัน</option>
-            <option value="1" {% if pet and pet.is_neutered %}selected{% endif %}>ทำหมันแล้ว</option>
+            <option value="0" {% if not pet or not pet.is_neutered %}selected{% endif %}>ยังไม่ทำหมัน / Not Neutered</option>
+            <option value="1" {% if pet and pet.is_neutered %}selected{% endif %}>ทำหมันแล้ว / Neutered</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>สัตวแพทย์หลัก</label>
+          <label>สัตวแพทย์หลัก / Primary Vet</label>
           <select name="primary_vet_id" class="form-control">
-            <option value="">-- ยังไม่กำหนด --</option>
+            <option value="">-- ยังไม่กำหนด / Unassigned --</option>
             {% for vet in vets %}
               <option value="{{ vet.vet_id }}" {% if pet and pet.primary_vet_id == vet.vet_id %}selected{% endif %}>
                 {{ vet.first_name }} {{ vet.last_name }}{% if vet.specialization %} ({{ vet.specialization }}){% endif %}
@@ -100,10 +100,10 @@
 
         {% if pet %}
         <div class="form-group">
-          <label>สถานะ</label>
+          <label>สถานะ / Status</label>
           <select name="is_active" class="form-control">
-            <option value="1" {% if pet.is_active %}selected{% endif %}>ใช้งาน</option>
-            <option value="0" {% if not pet.is_active %}selected{% endif %}>ปิดใช้งาน</option>
+            <option value="1" {% if pet.is_active %}selected{% endif %}>ใช้งาน / Active</option>
+            <option value="0" {% if not pet.is_active %}selected{% endif %}>ปิดใช้งาน / Inactive</option>
           </select>
         </div>
         {% endif %}
@@ -112,9 +112,9 @@
 
       <div class="form-actions">
         <button type="submit" class="btn btn-primary">
-          <i class="fas fa-save"></i> {% if pet %}บันทึกการแก้ไข{% else %}เพิ่มสัตว์เลี้ยง{% endif %}
+          <i class="fas fa-save"></i> {% if pet %}บันทึกการแก้ไข / Save Changes{% else %}เพิ่มสัตว์เลี้ยง / Add Pet{% endif %}
         </button>
-        <a href="{% url 'pet_list' %}" class="btn btn-outline">ยกเลิก</a>
+        <a href="{% url 'pet_list' %}" class="btn btn-outline">ยกเลิก / Cancel</a>
       </div>
     </form>
   </div>

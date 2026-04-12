@@ -1,27 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}สร้างนัดหมาย{% endblock %}
-{% block page_title %}สร้างนัดหมายใหม่{% endblock %}
-{% block page_subtitle %}กรอกข้อมูลนัดหมาย{% endblock %}
+{% block title %}สร้างนัดหมาย / Create Appointment{% endblock %}
+{% block page_title %}สร้างนัดหมายใหม่ / Create New Appointment{% endblock %}
+{% block page_subtitle %}กรอกข้อมูลนัดหมาย / Fill in appointment information{% endblock %}
 
 {% block content %}
 
-<div class="data-card">
-  <div class="data-card-header">
-    <h2><i class="fas fa-calendar-plus"></i> ข้อมูลนัดหมาย</h2>
-    <a href="{% url 'appointment_list' %}" class="btn btn-outline btn-sm">
-      <i class="fas fa-arrow-left"></i> กลับ
-    </a>
-  </div>
-  <div style="padding: 24px;">
-    <form method="POST" action="">
-      {% csrf_token %}
-      <div class="form-grid">
+<div style="max-width: 800px; margin: 0 auto;">
+  <form method="POST" action="">
+    {% csrf_token %}
 
+    <!-- SECTION 1: ข้อมูลสัตว์เลี้ยง / Pet Info -->
+    <div class="form-section">
+      <div class="section-title">
+        <i class="fas fa-dog"></i>
+        <span>ข้อมูลสัตว์เลี้ยง / Pet Details</span>
+      </div>
+      
+      <div class="form-grid">
         <div class="form-group">
-          <label>สัตว์เลี้ยง <span class="required">*</span></label>
+          <label>เลือกสัตว์เลี้ยง / Select Pet <span class="required">*</span></label>
           <select name="pet_id" class="form-control" required>
-            <option value="">-- เลือกสัตว์เลี้ยง --</option>
+            <option value="">-- เลือกชื่อสัตว์เลี้ยง --</option>
             {% for pet in pets %}
               <option value="{{ pet.pet_id }}">{{ pet.name }} ({{ pet.owner_name }})</option>
             {% endfor %}
@@ -29,60 +29,114 @@
         </div>
 
         <div class="form-group">
-          <label>สัตวแพทย์ <span class="required">*</span></label>
-          <select name="vet_id" class="form-control" required>
-            <option value="">-- เลือกสัตวแพทย์ --</option>
-            {% for vet in vets %}
-              <option value="{{ vet.vet_id }}">{{ vet.first_name }} {{ vet.last_name }}{% if vet.specialization %} ({{ vet.specialization }}){% endif %}</option>
-            {% endfor %}
-          </select>
+          <label>ระบุเพศ / Specify Gender <span class="text-muted">(อัปเดตข้อมูลอัตโนมัติ)</span></label>
+          <div class="gender-pills">
+            <div class="gender-pill">
+              <input type="radio" name="gender" value="M" id="genderM">
+              <label for="genderM" class="male">
+                <i class="fas fa-mars"></i> ชาย / Male
+              </label>
+            </div>
+            <div class="gender-pill">
+              <input type="radio" name="gender" value="F" id="genderF">
+              <label for="genderF" class="female">
+                <i class="fas fa-venus"></i> หญิง / Female
+              </label>
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
 
+    <!-- SECTION 2: ข้อมูลการนัดหมาย / Appointment Details -->
+    <div class="form-section">
+      <div class="section-title">
+        <i class="fas fa-clock"></i>
+        <span>ข้อมูลการนัดหมาย / Appointment Info</span>
+      </div>
+
+      <div class="form-grid">
         <div class="form-group">
-          <label>วันที่-เวลานัด <span class="required">*</span></label>
+          <label>วันที่-เวลานัด / Date-Time <span class="required">*</span></label>
           <div style="display: flex; gap: 10px;">
-            <input type="date" name="appt_date" class="form-control" required style="flex: 1;">
+            <input type="date" name="appt_date" id="apptDate" class="form-control" required style="flex: 1.5;">
             <select name="appt_time" class="form-control" required style="flex: 1;">
-                <option value="">กรุณาเลือกเวลา</option>
-                <optgroup label="ก่อนเที่ยง">
-                    <option value="09:00:00">9:00 - 10:00</option>
-                    <option value="10:00:00">10:00 - 11:00</option>
-                    <option value="11:00:00">11:00 - 12:00</option>
+                <option value="">เลือกเวลา</option>
+                <optgroup label="AM">
+                    <option value="09:00:00">09:00</option>
+                    <option value="10:00:00">10:00</option>
+                    <option value="11:00:00">11:00</option>
                 </optgroup>
-                <optgroup label="หลังเที่ยง">
-                    <option value="13:00:00">13:00 - 14:00</option>
-                    <option value="14:00:00">14:00 - 15:00</option>
-                    <option value="15:00:00">15:00 - 16:00</option>
-                </optgroup>
-                <optgroup label="ช่วงเย็น">
-                    <option value="16:00:00">16:00 - 17:00</option>
-                    <option value="18:00:00">18:00 - 19:00</option>
-                    <option value="19:00:00">19:00 - 20:00</option>
+                <optgroup label="PM">
+                    <option value="13:00:00">13:00</option>
+                    <option value="14:00:00">14:00</option>
+                    <option value="15:00:00">15:00</option>
+                    <option value="16:00:00">16:00</option>
                 </optgroup>
             </select>
           </div>
         </div>
 
         <div class="form-group">
-          <label>เหตุผลนัด</label>
-          <input type="text" name="reason" class="form-control" placeholder="เช่น ตรวจสุขภาพประจำปี, ฉีดวัคซีน">
+          <label>เหตุผลที่นัด / Reason</label>
+          <input type="text" name="reason" class="form-control" placeholder="เช่น ฉีดวัคซีน, ตรวจเลือด">
         </div>
 
         <div class="form-group full-width">
-          <label>หมายเหตุ</label>
-          <textarea name="notes" class="form-control" rows="3" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
+          <label>หมายเหตุ / Notes</label>
+          <textarea name="notes" class="form-control" rows="2" placeholder="ข้อมูลเพิ่มเติมสำหรับคุณหมอ..."></textarea>
         </div>
-
       </div>
 
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">
-          <i class="fas fa-save"></i> สร้างนัดหมาย
-        </button>
-        <a href="{% url 'appointment_list' %}" class="btn btn-outline">ยกเลิก</a>
+      <!-- Advanced Options Toggle -->
+      <div class="advanced-toggle" onclick="toggleAdvanced()">
+        <i class="fas fa-cog"></i> 
+        <span>ตั้งค่าสัตวแพทย์ (ตัวเลือกเสริม) / Advanced Vet Options</span>
+        <i class="fas fa-chevron-down" id="advIcon"></i>
       </div>
-    </form>
-  </div>
+
+      <div id="advancedContent" style="display: none;">
+        <div class="form-group">
+          <label>ระบุสัตวแพทย์ (ถ้าต้องการเจาะจง)</label>
+          <select name="vet_id" class="form-control">
+            <option value="">-- ปล่อยว่างเพื่อมอบหมายอัตโนมัติ (Pending) --</option>
+            {% for vet in vets %}
+              <option value="{{ vet.vet_id }}">{{ vet.first_name }} {{ vet.last_name }}</option>
+            {% endfor %}
+          </select>
+          <small class="text-muted" style="display: block; margin-top: 5px;">* หากไม่เลือก ระบบจะมอบหมายให้หมอที่กดรับเคสนี้โดยอัตโนมัติ</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions" style="background: white; padding: 20px; border-radius: var(--radius); border: 1px solid #edf2f7;">
+      <button type="submit" class="btn btn-primary btn-lg" style="flex: 2; padding: 15px;">
+        <i class="fas fa-save"></i> ยืนยันการสร้างนัดหมาย / Confirm Appointment
+      </button>
+      <a href="{% url 'appointment_list' %}" class="btn btn-outline" style="flex: 1;">ยกเลิก</a>
+    </div>
+  </form>
 </div>
 
+<script>
+  function toggleAdvanced() {
+    const content = document.getElementById('advancedContent');
+    const icon = document.getElementById('advIcon');
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+      icon.className = 'fas fa-chevron-up';
+    } else {
+      content.style.display = 'none';
+      icon.className = 'fas fa-chevron-down';
+    }
+  }
+
+  // Set default date to tomorrow
+  window.addEventListener('load', () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('apptDate').value = tomorrow.toISOString().split('T')[0];
+    document.getElementById('apptDate').setAttribute('min', new Date().toISOString().split('T')[0]);
+  });
+</script>
 {% endblock %}

@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}บันทึกการรักษา / Record Treatment{% endblock %}
+{% block page_title %}บันทึกการรักษา / Record Treatment{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="data-card">
+        <div class="data-card-header">
+            <h3><i class="fas fa-file-medical"></i> ข้อมูลการรักษา - {{ appt.pet_name }}</h3>
+            <a href="{% url 'appointment_list' %}" class="btn btn-outline btn-sm">
+                <i class="fas fa-arrow-left"></i> กลับไปรายการนัดหมาย
+            </a>
+        </div>
+        
+        <form method="POST" id="treatmentForm">
+            {% csrf_token %}
+            
+            <!-- ===== ข้อมูลเบื้องต้น (Read-only) ===== -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                <div>
+                    <label style="font-size: 12px; color: #666;">สัตว์เลี้ยง / Pet</label>
+                    <div style="font-weight: 700;">{{ appt.pet_name }} ({{ appt.species }})</div>
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: #666;">สัตวแพทย์ / Vet</label>
+                    <div style="font-weight: 700;">{{ appt.vet_name }}</div>
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: #666;">วันที่นัด / Date</label>
+                    <div style="font-weight: 700;">{{ appt.appt_datetime|date:"d/m/Y H:i" }}</div>
+                </div>
+            </div>
+
+            <!-- ===== บันทึกทางการแพทย์ ===== -->
+            <div style="margin-bottom: 30px;">
+                <h4 style="margin-bottom: 15px; color: var(--primary-dark); border-bottom: 2px solid #eee; padding-bottom: 5px;">
+                    <i class="fas fa-stethoscope"></i> รายละเอียดทางการแพทย์
+                </h4>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 0 0 150px;">
+                        <label>น้ำหนัก / Weight (kg)</label>
+                        <input type="number" step="0.01" name="weight_at_visit" class="form-control" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>อาการเบื้องต้น / Chief Complaint</label>
+                        <input type="text" name="chief_complaint" class="form-control" value="{{ appt.reason }}" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>ผลการวินิจฉัย / Diagnosis</label>
+                    <textarea name="diagnosis" class="form-control" rows="2" placeholder="ระบุผลการวินิจฉัย..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>กรรมวิธีการรักษา / Treatment & Procedure</label>
+                    <textarea name="treatment" class="form-control" rows="3" placeholder="ระบุขั้นตอนการรักษา..."></textarea>
+                </div>
+                <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="form-group">
+                        <label>บันทึกเพิ่มเติม / Notes</label>
+                        <input type="text" name="notes" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>วันที่นัดติดตามผล / Follow-up Date</label>
+                        <input type="date" name="follow_up_date" id="followUpDate" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== รายการบริการ (Dynamic) ===== -->
+            <div style="margin-bottom: 30px;">
+                <h4 style="margin-bottom: 15px; color: var(--primary-dark); border-bottom: 2px solid #eee; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center;">
+                    <span><i class="fas fa-concierge-bell"></i> รายการบริการ / Services</span>
+                    <button type="button" class="btn btn-sm btn-outline" onclick="addServiceRow()">
+                        <i class="fas fa-plus"></i> เพิ่มบริการ
+                    </button>
+                </h4>
+                <div id="servicesContainer">
+                    <!-- จะถูกเติมด้วย JS -->
+                </div>
+            </div>
+
+            <!-- ===== รายการยา (Dynamic) ===== -->
+            <div style="margin-bottom: 30px;">
+                <h4 style="margin-bottom: 15px; color: var(--primary-dark); border-bottom: 2px solid #eee; padding-bottom: 5px; display: flex; justify-content: space-between; align-items: center;">
+                    <span><i class="fas fa-pills"></i> สั่งยา / Prescriptions</span>
+                    <button type="button" class="btn btn-sm btn-outline" onclick="addMedicineRow()">
+                        <i class="fas fa-plus"></i> เพิ่มยา
+                    </button>
+                </h4>
+                <div id="medicinesContainer">
+                    <!-- จะถูกเติมด้วย JS -->
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; display: flex; justify-content: flex-end; gap: 12px;">
+                <a href="{% url 'appointment_list' %}" class="btn btn-outline">ยกเลิก</a>
+                <button type="submit" class="btn btn-primary btn-lg" style="padding: 12px 30px;">
+                    <i class="fas fa-save"></i> บันทึกการรักษาและเสร็จสิ้นการนัดหมาย
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Template สำหรับแถวบริการ -->
+<template id="serviceRowTemplate">
+    <div class="form-row service-row" style="background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 10px; align-items: flex-end;">
+        <div class="form-group" style="flex: 1;">
+            <label>เลือกบริการ</label>
+            <select name="service_ids[]" class="form-control" required>
+                <option value="">-- เลือกบริการ --</option>
+                {% for svc in services %}
+                <option value="{{ svc.service_id }}" data-price="{{ svc.price }}">{{ svc.service_name }} (฿{{ svc.price }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" style="flex: 0 0 150px;">
+            <label>ราคา (บาท)</label>
+            <input type="number" step="0.01" name="service_prices[]" class="form-control" placeholder="0.00">
+        </div>
+        <div class="form-group" style="flex: 1;">
+            <label>บันทึกเพิ่มเติม</label>
+            <input type="text" name="service_notes[]" class="form-control">
+        </div>
+        <button type="button" class="btn btn-danger btn-icon" onclick="this.closest('.service-row').remove()" style="margin-bottom: 20px;">
+            <i class="fas fa-trash"></i>
+        </button>
+    </div>
+</template>
+
+<!-- Template สำหรับแถวยา -->
+<template id="medicineRowTemplate">
+    <div class="medicine-row" style="background: #fdfdfd; border: 1px solid #eee; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+        <div class="form-row" style="margin-bottom: 10px;">
+            <div class="form-group" style="flex: 2;">
+                <label>เลือกยา / Medicine</label>
+                <select name="medicine_ids[]" class="form-control" required>
+                    <option value="">-- เลือกยา --</option>
+                    {% for med in medicines %}
+                    <option value="{{ med.medicine_id }}" {% if med.stock_qty <= 0 %}disabled style="color:#ccc;"{% endif %}>
+                        {{ med.name }} - [คงเหลือ: {{ med.stock_qty }} {{ med.unit }}]
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>จำนวนที่จ่าย</label>
+                <input type="number" name="qty_dispensed[]" class="form-control" min="1" required>
+            </div>
+            <button type="button" class="btn btn-danger btn-icon" onclick="this.closest('.medicine-row').remove()">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+        <div class="form-row">
+            <div class="form-group" style="flex: 2;">
+                <label>วิธีใช้ (Dosage)</label>
+                <input type="text" name="dosages[]" class="form-control" placeholder="เช่น 1 เม็ด เช้า-เย็น หลังอาหาร">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>ระยะเวลา (วัน)</label>
+                <input type="number" name="duration_days[]" class="form-control" placeholder="จำนวนวัน">
+            </div>
+            <div class="form-group" style="flex: 2;">
+                <label>คำแนะนำเพิ่มเติม</label>
+                <input type="text" name="instructions[]" class="form-control">
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+function addServiceRow() {
+    const template = document.getElementById('serviceRowTemplate');
+    const container = document.getElementById('servicesContainer');
+    const clone = template.content.cloneNode(true);
+    
+    // Auto-fill price when service selected
+    clone.querySelector('select').addEventListener('change', function() {
+        const selected = this.options[this.selectedIndex];
+        const price = selected.getAttribute('data-price');
+        this.closest('.service-row').querySelector('input[name="service_prices[]"]').value = price;
+    });
+
+    container.appendChild(clone);
+}
+
+function addMedicineRow() {
+    const template = document.getElementById('medicineRowTemplate');
+    const container = document.getElementById('medicinesContainer');
+    const clone = template.content.cloneNode(true);
+    container.appendChild(clone);
+}
+
+// เริ่มต้นด้วยการเพิ่ม 1 แถวบริการ (ถ้ามีการแจ้งเหตุผลว่าต้องการทำอะไร)
+window.addEventListener('load', () => {
+    {% if appt.reason %}
+    addServiceRow();
+    {% endif %}
+
+    // ป้องกันการเลือกวันที่ย้อนหลัง (Fix CK_MR_FOLLOWUP)
+    const today = new Date().toISOString().split('T')[0];
+    const followUpInput = document.getElementById('followUpDate');
+    if (followUpInput) {
+        followUpInput.setAttribute('min', today);
+    }
+});
+</script>
+
+<style>
+.form-container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+.btn-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; padding: 0; }
+.btn-lg { font-size: 16px; font-weight: 600; }
+</style>
+{% endblock %}
