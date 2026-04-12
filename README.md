@@ -123,12 +123,13 @@ DATABASES = {
 
 ### 2. สร้างฐานข้อมูล
 
-สร้างฐานข้อมูล `PetClinicDB` ใน SQL Server Management Studio (SSMS) หรือใช้คำสั่ง SQL:
+ทำตามขั้นตอนด้านล่างเพื่อเตรียมฐานข้อมูลให้พร้อมใช้งาน:
 
-```sql
-CREATE DATABASE PetClinicDB;
-```
+1. สร้างฐานข้อมูลชื่อ `PetClinicDB` ใน SQL Server
+2. เปิดไฟล์ [**`database_setup.sql`**](database_setup.sql) ในโปรเจกต์นี้ด้วย SSMS
+3. กด **Execute** (หรือปุ่ม F5) เพื่อสร้างตารางและนำเข้าข้อมูลเริ่มต้นทั้งหมดทันที
 
+---
 ### 3. รันเซิร์ฟเวอร์
 
 ```bash
