@@ -1,13 +1,9 @@
 # 🏥 NongNavi Veterinary Clinic — ระบบจัดการคลินิกสัตว์แพทย์
 
-<p align="center">
-  <img src="core/static/images/Nongnavi-removebg-preview.png" width="200">
-</p>
+<img src="core/static/images/Nongnavi-removebg-preview.png" width="180">
 
-<p align="center">
-  <strong>ระบบจัดการคลินิกสัตว์เลี้ยง NongNavi (น้องนาวี่) สัตวแพทย์</strong><br>
-  พัฒนาด้วย Django Framework + Microsoft SQL Server
-</p>
+**ระบบจัดการคลินิกสัตว์เลี้ยง NongNavi (น้องนาวี่) สัตวแพทย์**  
+พัฒนาด้วย Django Framework + Microsoft SQL Server
 
 ---
 
