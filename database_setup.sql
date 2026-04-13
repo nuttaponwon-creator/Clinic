@@ -248,6 +248,13 @@ INSERT INTO dbo.OWNER ([owner_id], [first_name], [last_name], [phone], [email], 
 INSERT INTO dbo.OWNER ([owner_id], [first_name], [last_name], [phone], [email], [address], [registered_date], [user_id], [is_active]) VALUES (14, N'อาลีฟ', N'ยามาว', N'0800315530', NULL, NULL, '2026-04-12', NULL, True);
 SET IDENTITY_INSERT dbo.OWNER OFF;
 
+-- Create Filtered Unique Index for Email (Allows multiple NULLs)
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'UQ_OWNER_EMAIL_FILTERED' AND object_id = OBJECT_ID('dbo.OWNER'))
+BEGIN
+    CREATE UNIQUE NONCLUSTERED INDEX UQ_OWNER_EMAIL_FILTERED
+    ON dbo.OWNER(email)
+    WHERE email IS NOT NULL;
+END
 GO
 
 -- ==========================================

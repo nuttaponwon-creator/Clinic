@@ -317,6 +317,7 @@ def pet_add(request):
         try:
             with connection.cursor() as c:
                 c.execute("""
+                    SET NOCOUNT ON;
                     INSERT INTO dbo.PET
                         (owner_id, name, species_id, breed_id, date_of_birth,
                          gender, weight_kg, is_neutered, primary_vet_id, is_active)
@@ -1241,6 +1242,7 @@ def public_booking(request):
             pet_name = request.POST['pet_name'].strip()
             species_id = clean_value(request.POST['species_id'], 'int')
             breed_id = clean_value(request.POST.get('breed_id'), 'int')
+            gender = request.POST.get('gender') or 'U'
             service_id = clean_value(request.POST.get('service_id'), 'int')
             vet_id = clean_value(request.POST.get('vet_id'), 'int')
             appt_date = request.POST.get('appt_date', '').strip()
@@ -1275,9 +1277,10 @@ def public_booking(request):
                 else:
                     # สร้างเจ้าของใหม่
                     c.execute("""
+                        SET NOCOUNT ON;
                         INSERT INTO dbo.OWNER (first_name, last_name, phone, email)
-                        OUTPUT inserted.owner_id
-                        VALUES (%s, %s, %s, %s)
+                        VALUES (%s, %s, %s, %s);
+                        SELECT SCOPE_IDENTITY();
                     """, [first_name, last_name, phone, email])
                     owner_id = int(c.fetchone()[0])
                     # ถ้า Login อยู่ → ผูก OWNER ใหม่นี้กับ account ทันที
@@ -1300,10 +1303,11 @@ def public_booking(request):
                 else:
                     # สร้างสัตว์เลี้ยงใหม่
                     c.execute("""
-                        INSERT INTO dbo.PET (owner_id, name, species_id, breed_id, is_active)
-                        OUTPUT inserted.pet_id
-                        VALUES (%s, %s, %s, %s, 1)
-                    """, [owner_id, pet_name, species_id, breed_id])
+                        SET NOCOUNT ON;
+                        INSERT INTO dbo.PET (owner_id, name, species_id, breed_id, gender, is_active)
+                        VALUES (%s, %s, %s, %s, %s, 1);
+                        SELECT SCOPE_IDENTITY();
+                    """, [owner_id, pet_name, species_id, breed_id, gender])
                     pet_id = int(c.fetchone()[0])
 
                 # 3) ถ้าไม่เลือกหมอ ให้เลือกหมอที่มีภาระน้อยที่สุด

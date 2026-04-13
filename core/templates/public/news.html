@@ -63,9 +63,15 @@
                     {{ item.content_th|truncatechars:100 }}
                 </p>
                 <div style="margin-top: auto;">
-                    <a href="#" class="btn-hero-outline" style="padding: 10px 20px; font-size: 14px; border-radius: 50px;">
+                    <button class="btn-hero-outline open-news-modal" 
+                            style="padding: 10px 20px; font-size: 14px; border-radius: 50px; cursor: pointer; background: transparent;"
+                            data-title="{{ item.title_th }}"
+                            data-content="{{ item.content_th }}"
+                            data-image="{{ item.image_url|default:'' }}"
+                            data-category="{{ item.category|default:'ทั่วไป' }}"
+                            data-date="{{ item.created_at|date:'d M Y' }}">
                         อ่านเพิ่มเติม <i class="fas fa-arrow-right" style="margin-left: 8px; font-size: 12px;"></i>
-                    </a>
+                    </button>
                 </div>
             </div>
         </article>
@@ -81,15 +87,38 @@
     {% endif %}
 </div>
 
-<!-- JS for Filtering -->
+<!-- ===== News Detail Modal ===== -->
+<div class="news-modal" id="newsModal">
+    <div class="news-modal-overlay" id="modalOverlay"></div>
+    <div class="news-modal-container">
+        <div class="news-modal-close" id="modalClose">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="news-modal-header" id="modalHeader">
+            <img src="" alt="" id="modalImage">
+        </div>
+        <div class="news-modal-body">
+            <div class="news-modal-meta">
+                <span class="news-modal-category" id="modalCategory">ทั่วไป</span>
+                <span class="news-modal-date" id="modalDate">
+                    <i class="far fa-calendar-alt"></i> 12 Apr 2026
+                </span>
+            </div>
+            <h2 class="news-modal-title" id="modalTitle">หัวข้อข่าว</h2>
+            <div class="news-modal-text" id="modalContent">เนื้อหาข่าว...</div>
+        </div>
+    </div>
+</div>
+
+<!-- JS for Filtering & Modal -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // 1. Filtering Logic
     const filterBtns = document.querySelectorAll('.filter-btn');
     const newsItems = document.querySelectorAll('.news-item');
 
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Update Active State
             filterBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
@@ -110,6 +139,50 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+    // 2. Modal Logic
+    const modal = document.getElementById('newsModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalContent = document.getElementById('modalContent');
+    const modalCategory = document.getElementById('modalCategory');
+    const modalDate = document.getElementById('modalDate');
+    const modalHeader = document.getElementById('modalHeader');
+    
+    document.querySelectorAll('.open-news-modal').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const data = this.dataset;
+            
+            // Fill Data
+            modalTitle.innerText = data.title;
+            modalContent.innerText = data.content;
+            modalCategory.innerText = data.category;
+            modalDate.innerHTML = `<i class="far fa-calendar-alt"></i> ${data.date}`;
+            
+            if (data.image) {
+                modalImage.src = data.image;
+                modalHeader.style.display = 'block';
+            } else {
+                modalHeader.style.display = 'none';
+            }
+            
+            // Show Modal
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+            document.body.style.overflow = 'hidden'; // Prevent scroll
+        });
+    });
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
+    };
+
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalOverlay').addEventListener('click', closeModal);
 });
 </script>
 {% endblock %}

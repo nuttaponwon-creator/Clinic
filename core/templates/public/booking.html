@@ -99,6 +99,25 @@
                        value="{{ form_data.pet_name|default:'' }}" required>
               </div>
 
+              <!-- Gender Selection -->
+              <div class="form-group-pub full">
+                <label>{% trans "เพศ" %}</label>
+                <div class="gender-selection">
+                  <label class="gender-chip {% if form_data.gender == 'M' %}active{% endif %}" data-gender="M">
+                    <input type="radio" name="gender" value="M" {% if form_data.gender == 'M' %}checked{% endif %} onchange="updateGenderChips(this)">
+                    <i class="fas fa-mars" style="color: #4299e1;"></i> {% trans "เพศผู้" %}
+                  </label>
+                  <label class="gender-chip {% if form_data.gender == 'F' %}active{% endif %}" data-gender="F">
+                    <input type="radio" name="gender" value="F" {% if form_data.gender == 'F' %}checked{% endif %} onchange="updateGenderChips(this)">
+                    <i class="fas fa-venus" style="color: #ed64a6;"></i> {% trans "เพศเมีย" %}
+                  </label>
+                  <label class="gender-chip {% if not form_data.gender or form_data.gender == 'U' %}active{% endif %}" data-gender="U">
+                    <input type="radio" name="gender" value="U" {% if not form_data.gender or form_data.gender == 'U' %}checked{% endif %} onchange="updateGenderChips(this)">
+                    <i class="fas fa-question-circle" style="color: #a0aec0;"></i> {% trans "ไม่ระบุ" %}
+                  </label>
+                </div>
+              </div>
+
               <div class="form-group-pub">
                 <label>{% trans "ชนิดสัตว์" %} <span class="req">*</span></label>
                 <select name="species_id" id="species_id" class="input-pub" required onchange="filterBreeds()">
@@ -210,7 +229,6 @@ function filterBreeds() {
     var breedSelect = document.getElementById('breed_id');
     var options = breedSelect.options;
 
-    // Reset selection if species changes
     if (breedSelect.selectedIndex > 0) {
         var selectedItem = options[breedSelect.selectedIndex];
         if (speciesId && selectedItem.getAttribute('data-species') !== speciesId) {
@@ -225,6 +243,14 @@ function filterBreeds() {
         } else {
             opt.style.display = 'none';
         }
+    }
+}
+
+function updateGenderChips(input) {
+    const chips = document.querySelectorAll('.gender-chip');
+    chips.forEach(chip => chip.classList.remove('active'));
+    if (input.checked) {
+        input.parentElement.classList.add('active');
     }
 }
 

@@ -29,7 +29,7 @@ DEBUG = 'RENDER' not in os.environ
 if 'RENDER' in os.environ:
     ALLOWED_HOSTS = ['*']
 else:
-    ALLOWED_HOSTS = []
+    ALLOWED_HOSTS = ['*', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -100,6 +100,7 @@ else:
             'OPTIONS': {
                 'driver': 'ODBC Driver 17 for SQL Server',
                 'extra_params': 'TrustServerCertificate=yes;',
+                'use_output_clause': False,
             },
         }
     }
