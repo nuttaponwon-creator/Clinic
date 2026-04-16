@@ -29,15 +29,15 @@
       <div class="sidebar-avatar">
         {{ user_full_name|default:user.username|slice:":1"|upper }}
       </div>
-      <!-- Name & Badge -->
-      <div class="sidebar-user-info">
-        <div class="sidebar-user-name">{{ user_full_name|default:user.username }}</div>
+      <!-- Name & Badge (Interactive Button) -->
+      <button type="button" class="sidebar-user-info" id="sidebarUserInfo" onclick="toggleFullName(event)" title="แสดงชื่อเต็ม / Show Full Name">
+        <div class="sidebar-user-name" id="sidebarUserName">{{ user_full_name|default:user.username }}</div>
         {% if user_role == 'admin' %}
           <span class="sidebar-badge badge-admin"><i class="fas fa-shield-alt"></i> เจ้าหน้าที่</span>
         {% elif user_role == 'vet' %}
           <span class="sidebar-badge badge-vet"><i class="fas fa-stethoscope"></i> สัตวแพทย์</span>
         {% endif %}
-      </div>
+      </button>
       <!-- Visit Website Button -->
       <a href="{% url 'home' %}" class="sidebar-web-btn" title="ไปหน้าเว็บไซต์">
         <i class="fas fa-globe"></i>
@@ -149,6 +149,12 @@
     }
     updateClock();
     setInterval(updateClock, 1000);
+
+    function toggleFullName(event) {
+      if (event) event.preventDefault();
+      const infoEl = document.getElementById('sidebarUserInfo');
+      infoEl.classList.toggle('expanded');
+    }
   </script>
 
   {% block scripts %}{% endblock %}

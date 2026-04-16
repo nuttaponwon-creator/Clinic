@@ -36,6 +36,7 @@ urlpatterns = [
 
     # นัดหมาย
     path('admin-panel/appointments/', views.appointment_list, name='appointment_list'),
+    path('admin-panel/appointments/history/', views.appointment_history, name='appointment_history'),
     path('admin-panel/appointments/add/', views.appointment_add, name='appointment_add'),
 
     # สัตวแพทย์
@@ -54,8 +55,9 @@ urlpatterns = [
     path('admin-panel/medicines/add/', views.medicine_add, name='medicine_add'),
     path('admin-panel/medicines/restock/', views.medicine_restock, name='medicine_restock'),
 
-    # อัปเดตสถานะนัดหมาย (admin + vet)
+    # อัปเดตสถานะและบันทึกนัดหมาย (admin + vet)
     path('admin-panel/appointments/<int:appt_id>/update-status/', views.appointment_update_status, name='appointment_update_status'),
+    path('admin-panel/appointments/<int:appt_id>/update-notes/', views.appointment_update_notes, name='appointment_update_notes'),
 
     # บันทึกการรักษา
     path('admin-panel/appointments/<int:appt_id>/record-treatment/', views.record_treatment, name='record_treatment'),

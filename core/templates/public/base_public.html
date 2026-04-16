@@ -24,7 +24,9 @@
         <a href="{% url 'home' %}" class="nav-link {% if active_page == 'home' %}active{% endif %}">{% trans "หน้าแรก" %}</a>
         <a href="{% url 'public_services' %}" class="nav-link {% if active_page == 'services' %}active{% endif %}">{% trans "บริการ" %}</a>
         <a href="{% url 'public_doctors' %}" class="nav-link {% if active_page == 'doctors' %}active{% endif %}">{% trans "ทีมแพทย์" %}</a>
-        <a href="{% url 'public_news' %}" class="nav-link {% if active_page == 'news' %}active{% endif %}">{% trans "ข่าวสาร" %}</a>
+        <a href="{% url 'public_news' %}" class="nav-link {% if active_page == 'news' %}active{% endif %}">
+          {% if request.LANGUAGE_CODE == 'en' %}News{% else %}ข่าวสาร{% endif %}
+        </a>
         <a href="{% url 'public_booking' %}" class="nav-link btn-booking">
           <i class="fas fa-calendar-plus"></i> {% trans "จองคิว" %}
         </a>

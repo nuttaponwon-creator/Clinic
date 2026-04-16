@@ -20,16 +20,16 @@
 <div class="container">
     <div class="filter-bar-wrapper">
         <button class="filter-btn active" data-filter="all">
-            <i class="fas fa-th-large"></i> ทั้งหมด
+            <i class="fas fa-th-large"></i> {% if request.LANGUAGE_CODE == 'en' %}All{% else %}ทั้งหมด{% endif %}
         </button>
         <button class="filter-btn" data-filter="โปรโมชั่น">
-            <i class="fas fa-percentage"></i> โปรโมชั่น
+            <i class="fas fa-percentage"></i> {% if request.LANGUAGE_CODE == 'en' %}Promotions{% else %}โปรโมชั่น{% endif %}
         </button>
         <button class="filter-btn" data-filter="กิจกรรม">
-            <i class="fas fa-calendar-star"></i> กิจกรรม
+            <i class="fas fa-calendar-star"></i> {% if request.LANGUAGE_CODE == 'en' %}Activities{% else %}กิจกรรม{% endif %}
         </button>
         <button class="filter-btn" data-filter="สาระน่ารู้">
-            <i class="fas fa-lightbulb"></i> สาระน่ารู้
+            <i class="fas fa-lightbulb"></i> {% if request.LANGUAGE_CODE == 'en' %}Knowledge{% else %}สาระน่ารู้{% endif %}
         </button>
     </div>
 </div>
@@ -48,7 +48,7 @@
                     </div>
                 {% endif %}
                 <div class="news-badge">
-                    {{ item.category|default:"ทั่วไป" }}
+                    {% if request.LANGUAGE_CODE == 'en' %}{{ item.category_en|default:"General" }}{% else %}{{ item.category|default:"ทั่วไป" }}{% endif %}
                 </div>
             </div>
 
@@ -70,7 +70,7 @@
                             data-image="{{ item.image_url|default:'' }}"
                             data-category="{{ item.category|default:'ทั่วไป' }}"
                             data-date="{{ item.created_at|date:'d M Y' }}">
-                        อ่านเพิ่มเติม <i class="fas fa-arrow-right" style="margin-left: 8px; font-size: 12px;"></i>
+                        {% if request.LANGUAGE_CODE == 'en' %}Read More{% else %}อ่านเพิ่มเติม{% endif %} <i class="fas fa-arrow-right" style="margin-left: 8px; font-size: 12px;"></i>
                     </button>
                 </div>
             </div>
@@ -99,13 +99,13 @@
         </div>
         <div class="news-modal-body">
             <div class="news-modal-meta">
-                <span class="news-modal-category" id="modalCategory">ทั่วไป</span>
+                <span class="news-modal-category" id="modalCategory">{% if request.LANGUAGE_CODE == 'en' %}General{% else %}ทั่วไป{% endif %}</span>
                 <span class="news-modal-date" id="modalDate">
                     <i class="far fa-calendar-alt"></i> 12 Apr 2026
                 </span>
             </div>
-            <h2 class="news-modal-title" id="modalTitle">หัวข้อข่าว</h2>
-            <div class="news-modal-text" id="modalContent">เนื้อหาข่าว...</div>
+            <h2 class="news-modal-title" id="modalTitle">{% if request.LANGUAGE_CODE == 'en' %}News Title{% else %}หัวข้อข่าว{% endif %}</h2>
+            <div class="news-modal-text" id="modalContent">{% if request.LANGUAGE_CODE == 'en' %}News Content...{% else %}เนื้อหาข่าว...{% endif %}</div>
         </div>
     </div>
 </div>

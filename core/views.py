@@ -7,6 +7,8 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -245,7 +247,18 @@ def user_logout(request):
 # ===========================================================
 @staff_required
 def dashboard(request):
+    # แยกนัดหมายของตนเอง (สำหรับ Vet) vs ทั้งหมด
+    vet_id = get_vet_id_from_user(request)
+    my_appointments_count = 0
+    
     with connection.cursor() as c:
+        if vet_id:
+            c.execute("""
+                SELECT COUNT(*) FROM dbo.VW_UPCOMING_APPOINTMENTS 
+                WHERE vet_id = %s
+            """, [vet_id])
+            my_appointments_count = c.fetchone()[0]
+
         c.execute("SELECT COUNT(*) FROM dbo.PET WHERE is_active = 1")
         total_pets = c.fetchone()[0]
 
@@ -267,7 +280,27 @@ def dashboard(request):
         c.execute("SELECT * FROM dbo.VW_LOW_STOCK_MEDICINE ORDER BY shortage_qty DESC")
         low_stock_medicine = dictfetchall(c)
 
-        c.execute("SELECT first_name + ' ' + last_name as name, specialization FROM dbo.VETERINARIAN WHERE is_active = 1")
+        c.execute("SELECT * FROM dbo.VW_LOW_STOCK_VACCINE ORDER BY shortage_qty DESC")
+        low_stock_vaccine = dictfetchall(c)
+
+        c.execute("""
+            SELECT 
+                v.first_name + ' ' + v.last_name as name, 
+                v.specialization,
+                v.pet_count,
+                (SELECT COUNT(*) FROM dbo.APPOINTMENT a 
+                 WHERE a.vet_id = v.vet_id 
+                 AND CAST(a.appt_datetime AS DATE) = CAST(GETDATE() AS DATE)
+                 AND a.status = 'Scheduled') as today_appts,
+                (SELECT STRING_AGG(CONVERT(VARCHAR(5), a.appt_datetime, 108) + ' ' + p.name, ', ') 
+                 FROM dbo.APPOINTMENT a
+                 JOIN dbo.PET p ON a.pet_id = p.pet_id
+                 WHERE a.vet_id = v.vet_id 
+                 AND CAST(a.appt_datetime AS DATE) = CAST(GETDATE() AS DATE)
+                 AND a.status = 'Scheduled') as appt_details
+            FROM dbo.VETERINARIAN v 
+            WHERE v.is_active = 1
+        """)
         active_vets = dictfetchall(c)
 
     return render(request, 'dashboard.html', {
@@ -276,9 +309,12 @@ def dashboard(request):
         'total_owners': total_owners,
         'total_vets': total_vets,
         'total_appointments': total_appointments,
+        'my_appointments_count': my_appointments_count,
+        'is_vet': True if vet_id else False,
         'upcoming_appointments': upcoming_appointments,
         'vaccine_due_soon': vaccine_due_soon,
         'low_stock_medicine': low_stock_medicine,
+        'low_stock_vaccine': low_stock_vaccine,
         'active_vets': active_vets,
     })
 
@@ -506,12 +542,59 @@ def owner_edit(request, owner_id):
 @staff_required
 def appointment_list(request):
     with connection.cursor() as c:
-        c.execute("SELECT * FROM dbo.VW_UPCOMING_APPOINTMENTS ORDER BY appt_datetime")
+        c.execute("""
+            SELECT 
+                a.appt_id, a.appt_datetime, a.reason, a.status,
+                p.name AS pet_name, p.gender AS pet_gender,
+                s.species_name AS species,
+                o.first_name + ' ' + o.last_name AS owner_name,
+                o.phone AS owner_phone,
+                v.first_name + ' ' + v.last_name AS vet_name
+            FROM dbo.APPOINTMENT a
+            JOIN dbo.PET p ON a.pet_id = p.pet_id
+            JOIN dbo.SPECIES s ON p.species_id = s.species_id
+            JOIN dbo.OWNER o ON p.owner_id = o.owner_id
+            LEFT JOIN dbo.VETERINARIAN v ON a.vet_id = v.vet_id
+            WHERE a.status = 'Scheduled'
+            ORDER BY a.appt_datetime ASC
+        """)
         appointments = dictfetchall(c)
 
     return render(request, 'appointments.html', {
         'active_page': 'appointments',
         'appointments': appointments,
+    })
+
+
+@staff_required
+def appointment_history(request):
+    with connection.cursor() as c:
+        c.execute("""
+            SELECT 
+                a.appt_id, a.appt_datetime, a.reason, a.status, a.notes,
+                p.name AS pet_name, p.gender AS pet_gender,
+                s.species_name AS species,
+                o.first_name + ' ' + o.last_name AS owner_name,
+                o.phone AS owner_phone,
+                v.first_name + ' ' + v.last_name AS vet_name
+            FROM dbo.APPOINTMENT a
+            JOIN dbo.PET p ON a.pet_id = p.pet_id
+            JOIN dbo.SPECIES s ON p.species_id = s.species_id
+            JOIN dbo.OWNER o ON p.owner_id = o.owner_id
+            LEFT JOIN dbo.VETERINARIAN v ON a.vet_id = v.vet_id
+            WHERE a.status IN ('Completed', 'Cancelled', 'No-show')
+            ORDER BY a.appt_datetime DESC
+        """)
+        appointments = dictfetchall(c)
+
+        # ดึงรายชื่อวัคซีนเผื่อใช้บันทึกในหน้าเดียว
+        c.execute("SELECT vaccine_id, name FROM dbo.VACCINE WHERE is_active = 1 ORDER BY name")
+        active_vaccines = dictfetchall(c)
+
+    return render(request, 'appointment_history.html', {
+        'active_page': 'appointments',
+        'appointments': appointments,
+        'active_vaccines': active_vaccines,
     })
 
 
@@ -571,6 +654,53 @@ def appointment_add(request):
         'pets': pets,
         'vets': vets,
     })
+
+
+# ===========================================================
+#  APPOINTMENTS — Update Notes
+# ===========================================================
+@staff_required
+@require_POST
+def appointment_update_notes(request, appt_id):
+    try:
+        notes = request.POST.get('notes', '').strip()
+        vaccine_id = clean_value(request.POST.get('vaccine_id'), 'int')
+        next_due_date = clean_value(request.POST.get('next_due_date'), 'date')
+        
+        with connection.cursor() as c:
+            # 1. Update notes ใน Appointment เดิม
+            c.execute("UPDATE dbo.APPOINTMENT SET notes = %s WHERE appt_id = %s", [notes, appt_id])
+            
+            # 2. ถ้ามีการบันทึกวัคซีนร่วมด้วย
+            if vaccine_id:
+                # ดึงข้อมูล pet_id และ vet_id จาก Appointment นี้
+                c.execute("SELECT pet_id, vet_id FROM dbo.APPOINTMENT WHERE appt_id = %s", [appt_id])
+                appt_row = c.fetchone()
+                if appt_row:
+                    pet_id, vet_id = appt_row[0], appt_row[1]
+                    
+                    # บันทึกประวัติวัคซีน
+                    c.execute("""
+                        INSERT INTO dbo.VACCINATION_RECORD (pet_id, vaccine_id, vet_id, given_date, next_due_date, notes, created_at)
+                        VALUES (%s, %s, %s, GETDATE(), %s, %s, GETDATE())
+                    """, [pet_id, vaccine_id, vet_id, next_due_date, f"บันทึกผ่านการนัดหมาย: {notes}"])
+                    
+                    # ลดสต็อก
+                    c.execute("UPDATE dbo.VACCINE SET stock_qty = stock_qty - 1 WHERE vaccine_id = %s AND stock_qty > 0", [vaccine_id])
+                    
+                    # 3. ถ้าลงนัดครั้งหน้า ให้สร้าง Appointment ใหม่รอไว้เลย
+                    if next_due_date:
+                        c.execute("SELECT name FROM dbo.VACCINE WHERE vaccine_id = %s", [vaccine_id])
+                        vac_name = c.fetchone()[0] or "วัคซีน"
+                        appt_dt_str = f"{next_due_date} 09:00:00"
+                        c.execute("""
+                            INSERT INTO dbo.APPOINTMENT (pet_id, vet_id, appt_datetime, status, reason, created_at)
+                            VALUES (%s, %s, %s, 'Scheduled', %s, GETDATE())
+                        """, [pet_id, vet_id, appt_dt_str, f"[นัดอัตโนมัติ] {vac_name}"])
+
+        return JsonResponse({'status': 'success', 'message': 'บันทึกประวัติการรักษาและข้อมูลวัคซีนเรียบร้อยแล้ว'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': f'เกิดข้อผิดพลาด: {str(e)}'}, status=500)
 
 
 # ===========================================================
@@ -932,23 +1062,39 @@ def vaccine_record_add(request):
         try:
             with connection.cursor() as c:
                 c.execute("SET NOCOUNT ON")
+                pet_id = clean_value(request.POST['pet_id'], 'int')
+                vaccine_id = clean_value(request.POST['vaccine_id'], 'int')
+                vet_id = clean_value(request.POST['vet_id'], 'int')
+                given_date = clean_value(request.POST['given_date'], 'date')
+                next_due_date = clean_value(request.POST.get('next_due_date'), 'date')
+                notes = request.POST.get('notes') or None
+
                 c.execute("""
                     INSERT INTO dbo.VACCINATION_RECORD
                         (pet_id, vaccine_id, vet_id, given_date, next_due_date, notes, created_at)
                     VALUES (%s, %s, %s, %s, %s, %s, GETDATE())
-                """, [
-                    clean_value(request.POST['pet_id'], 'int'),
-                    clean_value(request.POST['vaccine_id'], 'int'),
-                    clean_value(request.POST['vet_id'], 'int'),
-                    clean_value(request.POST['given_date'], 'date'),
-                    clean_value(request.POST.get('next_due_date'), 'date'),
-                    request.POST.get('notes') or None,
-                ])
+                """, [pet_id, vaccine_id, vet_id, given_date, next_due_date, notes])
+                
+                # ถ้ามีวันนัดครั้งหน้า ให้สร้าง APPOINTMENT อัตโนมัติ (นัดหมายทางการแพทย์)
+                if next_due_date:
+                    # ดึงชื่อวัคซีนมาทำ reason
+                    c.execute("SELECT name FROM dbo.VACCINE WHERE vaccine_id = %s", [vaccine_id])
+                    vac_row = c.fetchone()
+                    vac_name = vac_row[0] if vac_row else "วัคซีน"
+                    
+                    # สร้างวันเวลาเริ่มต้น (สมมติว่าเป็น 09:00 น.)
+                    appt_dt_str = f"{next_due_date} 09:00:00"
+                    
+                    c.execute("""
+                        INSERT INTO dbo.APPOINTMENT (pet_id, vet_id, appt_datetime, status, reason, created_at)
+                        VALUES (%s, %s, %s, 'Scheduled', %s, GETDATE())
+                    """, [pet_id, vet_id, appt_dt_str, f"[นัดอัตโนมัติ] {vac_name}"])
+
                 # ลดสต็อกวัคซีน
                 c.execute("""
                     UPDATE dbo.VACCINE SET stock_qty = stock_qty - 1
                     WHERE vaccine_id = %s AND stock_qty > 0
-                """, [clean_value(request.POST['vaccine_id'], 'int')])
+                """, [vaccine_id])
 
             messages.success(request, 'บันทึกการฉีดวัคซีนสำเร็จ!')
         except Exception as e:
@@ -1216,12 +1362,54 @@ def my_page(request):
         """, [owner_id])
         vaccine_records = dictfetchall(c)
 
+        # ประวัติการรักษา (Medical Records) ล่าสุด 10 รายการ
+        c.execute("""
+            SELECT TOP 10 
+                mr.visit_date, mr.chief_complaint, mr.diagnosis, mr.treatment,
+                p.name AS pet_name,
+                v.first_name + ' ' + v.last_name AS vet_name
+            FROM dbo.MEDICAL_RECORD mr
+            JOIN dbo.PET p ON mr.pet_id = p.pet_id
+            JOIN dbo.VETERINARIAN v ON mr.vet_id = v.vet_id
+            WHERE p.owner_id = %s
+            ORDER BY mr.visit_date DESC, mr.created_at DESC
+        """, [owner_id])
+        medical_records = dictfetchall(c)
+
+        # นัดหมายวัคซีนที่จะถึงเร็วๆ นี้ (และที่เลยกำหนดแล้วแต่ยังไม่ได้ฉีดเข็มใหม่)
+        c.execute("""
+            SELECT 
+                vr.next_due_date,
+                p.name AS pet_name,
+                vc.name AS vaccine_name,
+                DATEDIFF(day, GETDATE(), vr.next_due_date) as days_left,
+                (SELECT TOP 1 appt_id FROM dbo.APPOINTMENT a 
+                 WHERE a.pet_id = p.pet_id 
+                 AND CAST(a.appt_datetime AS DATE) = CAST(vr.next_due_date AS DATE)
+                 AND (a.status = 'Scheduled' OR a.status = 'Completed')) as appt_id
+            FROM dbo.VACCINATION_RECORD vr
+            JOIN dbo.PET p ON vr.pet_id = p.pet_id
+            JOIN dbo.VACCINE vc ON vr.vaccine_id = vc.vaccine_id
+            WHERE p.owner_id = %s 
+              AND vr.next_due_date IS NOT NULL
+              -- เฉพาะรายการที่เป็นเข็มล่าสุดของวัคซีนชนิดนั้นๆ
+              AND vr.given_date = (
+                  SELECT MAX(given_date) 
+                  FROM dbo.VACCINATION_RECORD 
+                  WHERE pet_id = vr.pet_id AND vaccine_id = vr.vaccine_id
+              )
+            ORDER BY vr.next_due_date ASC
+        """, [owner_id])
+        upcoming_vaccines = dictfetchall(c)
+
     return render(request, 'public/my_page.html', {
         'active_page': 'my_page',
         'owner': owner,
         'pets': pets,
         'appointments': appointments,
         'vaccine_records': vaccine_records,
+        'medical_records': medical_records,
+        'upcoming_vaccines': upcoming_vaccines,
     })
 
 
@@ -1342,6 +1530,15 @@ def public_booking(request):
 
     # GET — แสดง form เปล่า
     selected_service = request.GET.get('service', '')
+    
+    # ถ้าส่งมาเป็นข้อความ 'Vaccine' ให้หา ID ที่ตรงกัน
+    if selected_service == 'Vaccine':
+        with connection.cursor() as c:
+            c.execute("SELECT service_id FROM dbo.SERVICE WHERE service_name LIKE '%วัคซีน%'")
+            row = c.fetchone()
+            if row:
+                selected_service = str(row[0])
+                
     return _render_booking_form(request, owner=owner, selected_service=selected_service)
 
 

@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+
+{% block title %}ประวัตินัดหมาย / Appointment History{% endblock %}
+{% block page_title %}ประวัตินัดหมาย / Appointment History{% endblock %}
+{% block page_subtitle %}นัดหมายที่เสร็จสิ้นหรือยกเลิกแล้ว / Completed or Cancelled Appointments{% endblock %}
+
+{% block content %}
+
+<div class="data-card">
+  <div class="data-card-header">
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchAppts" placeholder="ค้นหาประวัติ... / Search history..." onkeyup="filterTable('searchAppts', 'apptsTable')">
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px;">
+        <a href="{% url 'appointment_list' %}" class="btn btn-outline">
+          <i class="fas fa-arrow-left"></i> กลับไปหน้านัดหมาย / Back to Upcoming
+        </a>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table id="apptsTable">
+      <thead>
+        <tr>
+          <th style="width: 80px;">จัดการ</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments %}
+        <tr class="appt-row" 
+            onclick="openApptDetail(this)"
+            style="cursor: pointer;"
+            data-id="{{ appt.appt_id }}"
+            data-date="{{ appt.appt_datetime|date:'d/m/Y H:i' }}"
+            data-pet="{{ appt.pet_name }}"
+            data-pet-gender="{{ appt.pet_gender }}"
+            data-species="{{ appt.species }}"
+            data-owner="{{ appt.owner_name }}"
+            data-owner-phone="{{ appt.owner_phone }}"
+            data-vet="{{ appt.vet_name|default:'-' }}"
+            data-reason="{{ appt.reason|default:'-' }}"
+            data-notes="{{ appt.notes|default:'' }}"
+            data-status="{{ appt.status }}">
+          <td>{{ appt.appt_id }}</td>
+          <td><strong>{{ appt.appt_datetime|date:"d/m/Y H:i" }}</strong></td>
+          <td>
+            <strong>{{ appt.pet_name }}</strong>
+            {% if appt.pet_gender == 'M' %}
+              <i class="fas fa-mars" title="Male" style="color: #0984e3; margin-left: 4px;"></i>
+            {% elif appt.pet_gender == 'F' %}
+              <i class="fas fa-venus" title="Female" style="color: #e84393; margin-left: 4px;"></i>
+            {% endif %}
+          </td>
+          <td>{{ appt.species }}</td>
+          <td>{{ appt.owner_name }}</td>
+          <td>{{ appt.vet_name|default:"-" }}</td>
+          <td>{{ appt.reason|default:"-"|truncatechars:30 }}</td>
+          <td>
+            {% if appt.status == 'Completed' or appt.status|lower == 'completed' %}
+              <span class="badge badge-purple">เสร็จสิ้น / Completed</span>
+            {% elif appt.status == 'Cancelled' or appt.status|lower == 'cancelled' %}
+              <span class="badge badge-danger">ยกเลิก / Cancelled</span>
+            {% elif appt.status == 'No-show' or appt.status|lower == 'no-show' %}
+              <span class="badge badge-secondary">ไม่มาตามนัด / No-show</span>
+            {% else %}
+              <span class="badge badge-warning">{{ appt.status }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary" title="ดูรายละเอียด">
+              <i class="fas fa-eye"></i>
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9">
+            <div class="empty-state">
+              <i class="fas fa-history"></i>
+              <p>ยังไม่มีประวัตินัดหมาย / No appointment history</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ========================================
+     MODAL: APPOINTMENT DETAIL (Medical Record)
+     ======================================== -->
+<div id="detailModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content glass-modal" style="max-width: 700px; padding: 0; overflow: hidden;">
+    <div class="modal-header-gradient" style="padding: 24px 32px; background: linear-gradient(135deg, #6c5ce7 0%, #a855f7 100%); color: white; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h3 style="margin:0; font-size: 20px;">รายละเอียดประวัติการรักษา / Medical Record</h3>
+        <p style="margin:4px 0 0; font-size: 13px; opacity: 0.9;">ค้นหาและบันทึกประวัติย้อนหลัง</p>
+      </div>
+      <button onclick="closeModal()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 8px; border-radius: 50%; cursor: pointer; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <div class="modal-body" style="padding: 32px; background: white;">
+      <!-- Record Summary -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+        <div class="info-group">
+          <label style="display: block; font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">ข้อมูลสัตว์เลี้ยง / Pet Info</label>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div id="m-pet-avatar" style="width: 44px; height: 44px; border-radius: 12px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 20px;">🐾</div>
+            <div>
+              <div id="m-pet-name" style="font-weight: 700; color: #1e293b; font-size: 16px;">-</div>
+              <div id="m-species" style="font-size: 13px; color: #64748b;">-</div>
+            </div>
+          </div>
+        </div>
+        <div class="info-group">
+          <label style="display: block; font-size: 12px; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 8px;">ข้อมูลเจ้าของ / Owner Info</label>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #a855f7;"><i class="fas fa-user"></i></div>
+            <div>
+              <div id="m-owner-name" style="font-weight: 600; color: #1e293b; font-size: 15px;">-</div>
+              <div id="m-owner-phone" style="font-size: 13px; color: #64748b;">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visit Details -->
+      <div style="background: #f8fafc; border-radius: 16px; padding: 20px; border: 1px solid #f1f5f9; margin-bottom: 32px;">
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+          <div>
+            <div style="font-size: 12px; color: #94a3b8; font-weight: 500; margin-bottom: 4px;">ID นัดหมาย</div>
+            <div id="m-appt-id" style="font-weight: 600; color: #1e293b;">#0</div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: #94a3b8; font-weight: 500; margin-bottom: 4px;">สัตวแพทย์ผู้รักษา</div>
+            <div id="m-vet-name" style="font-weight: 600; color: #1e293b;">-</div>
+          </div>
+          <div>
+            <div style="font-size: 12px; color: #94a3b8; font-weight: 500; margin-bottom: 4px;">วัน-เวลาตรวจ</div>
+            <div id="m-appt-date" style="font-weight: 600; color: #1e293b;">-</div>
+          </div>
+        </div>
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed #e2e8f0;">
+          <div style="font-size: 12px; color: #94a3b8; font-weight: 500; margin-bottom: 4px;">เหตุผลการมา / Reason</div>
+          <div id="m-reason" style="color: #334155; line-height: 1.5;">-</div>
+        </div>
+      </div>
+
+      <!-- Clinical Notes (Editable) -->
+      <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px;">
+        <div class="notes-section">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="font-size: 13px; color: #1e293b; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-file-medical-alt" style="color: #6c5ce7;"></i> 
+              บันทึกการรักษา / Clinical Notes
+            </label>
+            <span id="save-status" style="font-size: 11px; color: #10b981; display: none;"><i class="fas fa-check-circle"></i> บันทึกแล้ว</span>
+          </div>
+          <textarea id="m-notes-editor" style="width: 100%; height: 260px; padding: 16px; border-radius: 12px; border: 2px solid #e2e8f0; font-family: inherit; font-size: 14px; line-height: 1.6; color: #334155; background: #fff; transition: all 0.2s ease; resize: none;" placeholder="ไม่มีบันทึกการรักษา..."></textarea>
+        </div>
+
+        <div class="vaccine-quick-add" style="background: #fdf2f8; border: 1px solid #fce7f3; border-radius: 16px; padding: 20px;">
+          <h4 style="margin: 0 0 16px; font-size: 14px; color: #be185d; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #fbcfe8; padding-bottom: 10px;">
+            <i class="fas fa-syringe"></i> บันทึกวัคซีน (ถ้ามี)
+          </h4>
+          
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 12px; color: #9d174d; font-weight: 600; margin-bottom: 6px;">วัคซีนที่ฉีดวันนี้</label>
+            <select id="m-vaccine-id" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #f9a8d4; background: white;">
+              <option value="">-- ไม่มีการฉีดวัคซีน --</option>
+              {% for v in active_vaccines %}
+                <option value="{{ v.vaccine_id }}">{{ v.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-top: 16px;">
+            <label style="display: block; font-size: 12px; color: #9d174d; font-weight: 600; margin-bottom: 6px;">วันที่นัดติดตามผล / Follow-up Date</label>
+            <input type="date" id="m-next-due" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #f9a8d4; background: white;">
+            <p style="font-size: 11px; color: #ec4899; margin: 8px 0 0;">* ลงนัดอัตโนมัติให้ลูกค้าทันที</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer" style="padding: 24px 32px; background: #f8fafc; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+      <div style="font-size: 12px; color: #94a3b8;"><i class="fas fa-info-circle"></i> ข้อมูลประวัติการรักษาย้อนหลังสามารถแก้ไขได้เฉพาะส่วนบันทึก</div>
+      <div style="display: flex; gap: 12px;">
+        <button onclick="closeModal()" class="btn btn-secondary">ยกเลิก</button>
+        <button onclick="saveNotes()" id="saveBtn" class="btn btn-primary" style="background: #3b82f6; border: none; padding: 10px 24px;">
+          <i class="fas fa-save"></i> บันทึกการเปลี่ยนแปลง
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.glass-modal {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  animation: modalEnter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalEnter {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+#m-notes-editor:focus {
+  outline: none;
+  border-color: #6c5ce7;
+  box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+}
+
+.appt-row:hover {
+  background: #f8faff !important;
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentApptId = null;
+
+function filterTable(inputId, tableId) {
+  const filter = document.getElementById(inputId).value.toLowerCase();
+  const rows = document.getElementById(tableId).querySelectorAll('tbody tr:not(.empty-row)');
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(filter) ? '' : 'none';
+  });
+}
+
+function openApptDetail(row) {
+  const data = row.dataset;
+  currentApptId = data.id;
+  
+  // Populate Modal
+  document.getElementById('m-appt-id').innerText = '#' + data.id;
+  document.getElementById('m-appt-date').innerText = data.date;
+  document.getElementById('m-pet-name').innerText = data.pet;
+  document.getElementById('m-species').innerText = data.species;
+  document.getElementById('m-owner-name').innerText = data.owner;
+  document.getElementById('m-owner-phone').innerText = data.ownerPhone;
+  document.getElementById('m-vet-name').innerText = data.vet;
+  document.getElementById('m-reason').innerText = data.reason;
+  document.getElementById('m-notes-editor').value = data.notes;
+  
+  // Avatar logic
+  const avatar = document.getElementById('m-pet-avatar');
+  avatar.innerText = data.pet.substring(0, 1).toUpperCase();
+  
+  // Status check
+  const statusEl = document.getElementById('save-status');
+  statusEl.style.display = 'none';
+  
+  // Show Modal
+  document.getElementById('detailModal').style.display = 'flex';
+  document.body.style.overflow = 'hidden'; // Prevent scroll
+}
+
+function closeModal() {
+  document.getElementById('detailModal').style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+function saveNotes() {
+  if (!currentApptId) return;
+  
+  const notes = document.getElementById('m-notes-editor').value;
+  const vaccineId = document.getElementById('m-vaccine-id').value;
+  const nextDue = document.getElementById('m-next-due').value;
+  
+  const saveBtn = document.getElementById('saveBtn');
+  const originalHtml = saveBtn.innerHTML;
+  
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+ 
+  // Send to server
+  const formData = new FormData();
+  formData.append('notes', notes);
+  formData.append('vaccine_id', vaccineId);
+  formData.append('next_due_date', nextDue);
+  formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+ 
+  fetch(`/admin-panel/appointments/${currentApptId}/update-notes/`, {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'success') {
+      // Update the data attribute on the row so it stays updated if closed/reopened
+      const row = document.querySelector(`.appt-row[data-id="${currentApptId}"]`);
+      if (row) row.dataset.notes = notes;
+      
+      // Visual feedback
+      document.getElementById('save-status').style.display = 'inline-block';
+      setTimeout(() => closeModal(), 1000);
+    } else {
+      alert('เกิดข้อผิดพลาด: ' + data.message);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+  })
+  .finally(() => {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = originalHtml;
+  });
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('detailModal');
+  if (event.target == modal) {
+    closeModal();
+  }
+}
+</script>
+{% endblock %}

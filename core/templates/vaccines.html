@@ -156,54 +156,86 @@
   <div style="padding: 24px;">
     <form method="POST" action="{% url 'vaccine_record_add' %}">
       {% csrf_token %}
-      <div class="form-grid">
+      <div class="form-section-frame">
+        <div class="form-section-title"><i class="fas fa-paw"></i> ข้อมูลสัตว์และตัวยา / Core Information</div>
+        <div class="form-grid">
+          <!-- Pet Selector -->
+          <div class="form-group">
+            <label>สัตว์เลี้ยง / Pet <span class="required">*</span></label>
+            <div class="searchable-select-container" id="petSearchContainer">
+              <input type="text" class="form-control searchable-input-trigger" id="petSearchInput" 
+                     placeholder="-- เลือกสัตว์เลี้ยง / Select Pet --" autocomplete="off">
+              <input type="hidden" name="pet_id" id="selectedPetId" required>
+              <div class="search-dropdown-menu" id="petSearchMenu">
+                <div class="search-results-list" id="petSearchResults"></div>
+              </div>
+              <select id="pet_id_select" style="display: none;">
+                <option value="">-- เลือกสัตว์เลี้ยง / Select Pet --</option>
+                {% for pet in pets %}
+                  <option value="{{ pet.pet_id }}" data-owner="{{ pet.owner_name }}">{{ pet.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
 
-        <div class="form-group">
-          <label>สัตว์เลี้ยง / Pet <span class="required">*</span></label>
-          <select name="pet_id" class="form-control" required>
-            <option value="">-- เลือกสัตว์เลี้ยง / Select Pet --</option>
-            {% for pet in pets %}
-              <option value="{{ pet.pet_id }}">{{ pet.name }} ({{ pet.owner_name }})</option>
-            {% endfor %}
-          </select>
+          <!-- Vaccine Selector -->
+          <div class="form-group">
+            <label>วัคซีน / Vaccine <span class="required">*</span></label>
+            <div class="searchable-select-container" id="vaccineSearchContainer">
+              <input type="text" class="form-control searchable-input-trigger" id="vaccineSearchInput" 
+                     placeholder="-- เลือกวัคซีน / Select Vaccine --" autocomplete="off">
+              <input type="hidden" name="vaccine_id" id="selectedVaccineId" required>
+              <div class="search-dropdown-menu" id="vaccineSearchMenu">
+                <div class="search-results-list" id="vaccineSearchResults"></div>
+              </div>
+              <select id="vaccine_id_select" style="display: none;">
+                <option value="">-- เลือกวัคซีน / Select Vaccine --</option>
+                {% for v in active_vaccines %}
+                  <option value="{{ v.vaccine_id }}" data-subtitle="คงเหลือ: {{ v.stock_qty }}">{{ v.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="form-group">
-          <label>วัคซีน / Vaccine <span class="required">*</span></label>
-          <select name="vaccine_id" class="form-control" required>
-            <option value="">-- เลือกวัคซีน / Select Vaccine --</option>
-            {% for v in active_vaccines %}
-              <option value="{{ v.vaccine_id }}">{{ v.name }} (คงเหลือ / Stock: {{ v.stock_qty }})</option>
-            {% endfor %}
-          </select>
+      <div class="form-section-frame">
+        <div class="form-section-title"><i class="fas fa-user-md"></i> รายละเอียดการบริการ / Service Details</div>
+        <div class="form-grid">
+          <!-- Vet Selector -->
+          <div class="form-group">
+            <label>สัตวแพทย์ผู้ฉีด / Veterinary <span class="required">*</span></label>
+            <div class="searchable-select-container" id="vetSearchContainer">
+              <input type="text" class="form-control searchable-input-trigger" id="vetSearchInput" 
+                     placeholder="-- เลือกสัตวแพทย์ / Select Vet --" autocomplete="off">
+              <input type="hidden" name="vet_id" id="selectedVetId" required>
+              <div class="search-dropdown-menu" id="vetSearchMenu">
+                <div class="search-results-list" id="vetSearchResults"></div>
+              </div>
+              <select id="vet_id_select" style="display: none;">
+                <option value="">-- เลือกสัตวแพทย์ / Select Vet --</option>
+                {% for vet in vets %}
+                  <option value="{{ vet.vet_id }}" data-subtitle="สัตวแพทย์">{{ vet.first_name }} {{ vet.last_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>วันที่ฉีด / Given Date <span class="required">*</span></label>
+            <input type="date" name="given_date" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label>วันครบกำหนดฉีดครั้งถัดไป / Next Due Date</label>
+            <input type="date" name="next_due_date" class="form-control">
+          </div>
+
+          <div class="form-group full-width">
+            <label>หมายเหตุ / Notes</label>
+            <textarea name="notes" class="form-control" rows="2" placeholder="หมายเหตุเพิ่มเติม... / Comments..."></textarea>
+          </div>
         </div>
-
-        <div class="form-group">
-          <label>สัตวแพทย์ผู้ฉีด / Veterinary <span class="required">*</span></label>
-          <select name="vet_id" class="form-control" required>
-            <option value="">-- เลือกสัตวแพทย์ / Select Vet --</option>
-            {% for vet in vets %}
-              <option value="{{ vet.vet_id }}">{{ vet.first_name }} {{ vet.last_name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>วันที่ฉีด / Given Date <span class="required">*</span></label>
-          <input type="date" name="given_date" class="form-control" required>
-        </div>
-
-        <div class="form-group">
-          <label>วันครบกำหนดฉีดครั้งถัดไป / Next Due Date</label>
-          <input type="date" name="next_due_date" class="form-control">
-        </div>
-
-
-        <div class="form-group full-width">
-          <label>หมายเหตุ / Notes</label>
-          <textarea name="notes" class="form-control" rows="2" placeholder="หมายเหตุเพิ่มเติม... / Comments..."></textarea>
-        </div>
-
       </div>
 
       <div class="form-actions">
@@ -228,7 +260,6 @@
           <th>สัตว์เลี้ยง / Pet</th>
           <th>เจ้าของ / Owner</th>
           <th>วัคซีน / Vaccine</th>
-
           <th>สัตวแพทย์ / Vet</th>
           <th>ครบกำหนดถัดไป / Next Due</th>
         </tr>
@@ -240,7 +271,6 @@
           <td>{{ r.pet_name }}</td>
           <td>{{ r.owner_name }}</td>
           <td><span class="badge badge-purple">{{ r.vaccine_name }}</span></td>
-
           <td>{{ r.vet_name }}</td>
           <td>
             {% if r.next_due_date %}
@@ -276,6 +306,142 @@
 
 {% block scripts %}
 <script>
+/**
+ * Single-Box Searchable Select Logic
+ * Unifies display and search into a single input field.
+ */
+/**
+ * Unified Searchable Select Logic
+ */
+function initSearchableSelect(containerId, inputId, menuId, resultsId, legacySelectId, hiddenId) {
+  const container = document.getElementById(containerId);
+  const input = document.getElementById(inputId);
+  const resultsList = document.getElementById(resultsId);
+  const legacySelect = document.getElementById(legacySelectId);
+  const hiddenInput = document.getElementById(hiddenId);
+  
+  if (!container || !input || !resultsList || !legacySelect) return;
+
+  const options = Array.from(legacySelect.querySelectorAll('option')).filter(opt => opt.value !== "");
+
+  function renderResults(filterText = "") {
+    const term = filterText.toLowerCase();
+    const filtered = term === "" ? options : options.filter(opt => {
+      const name = opt.textContent.toLowerCase();
+      const subtitle = opt.getAttribute('data-subtitle')?.toLowerCase() || "";
+      const owner = opt.getAttribute('data-owner')?.toLowerCase() || "";
+      return name.includes(term) || subtitle.includes(term) || owner.includes(term);
+    });
+
+    resultsList.innerHTML = "";
+    
+    if (filtered.length === 0) {
+      resultsList.innerHTML = `<div style="padding: 12px 16px; color: #999; font-size: 13px;">ไม่พบข้อมูล... / No results found</div>`;
+    } else {
+      filtered.forEach(opt => {
+        const item = document.createElement('div');
+        item.className = 'search-item';
+        if (hiddenInput.value === opt.value) item.classList.add('selected');
+        
+        const subtitle = opt.getAttribute('data-owner') ? `เจ้าของ: ${opt.getAttribute('data-owner')}` : (opt.getAttribute('data-subtitle') || "");
+        
+        item.innerHTML = `
+          <div class="search-item-title">${opt.textContent}</div>
+          ${subtitle ? `<div class="search-item-subtitle">${subtitle}</div>` : ''}
+        `;
+        
+        item.onclick = (e) => {
+          e.stopPropagation();
+          input.value = opt.textContent;
+          hiddenInput.value = opt.value;
+          legacySelect.value = opt.value;
+          container.classList.remove('open');
+          input.blur();
+          legacySelect.dispatchEvent(new Event('change'));
+        };
+        resultsList.appendChild(item);
+      });
+    }
+  }
+
+  input.onclick = (e) => {
+    e.stopPropagation();
+    const isOpen = container.classList.contains('open');
+    
+    // Close others
+    document.querySelectorAll('.searchable-select-container.open').forEach(el => {
+      if (el !== container) el.classList.remove('open');
+    });
+    
+    if (!isOpen) {
+      container.classList.add('open');
+      input.setSelectionRange(0, input.value.length);
+      renderResults(input.value);
+    }
+  };
+
+  input.oninput = () => {
+    if (!container.classList.contains('open')) {
+      container.classList.add('open');
+    }
+    renderResults(input.value);
+  };
+
+  document.addEventListener('click', (e) => {
+    if (!container.contains(e.target)) {
+      container.classList.remove('open');
+      if (input.value.trim() === "") {
+        hiddenInput.value = "";
+        legacySelect.value = "";
+      }
+    }
+  });
+
+  input.addEventListener('keydown', (e) => {
+    const items = resultsList.querySelectorAll('.search-item');
+    let currentIndex = Array.from(items).findIndex(item => item.classList.contains('active'));
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (currentIndex < items.length - 1) {
+        if (currentIndex >= 0) items[currentIndex].classList.remove('active');
+        items[currentIndex + 1].classList.add('active');
+        items[currentIndex + 1].scrollIntoView({ block: 'nearest' });
+      } else if (currentIndex === -1 && items.length > 0) {
+        items[0].classList.add('active');
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (currentIndex > 0) {
+        items[currentIndex].classList.remove('active');
+        items[currentIndex - 1].classList.add('active');
+        items[currentIndex - 1].scrollIntoView({ block: 'nearest' });
+      }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (currentIndex >= 0) {
+        items[currentIndex].click();
+      } else if (items.length > 0) {
+        items[0].click();
+      }
+    } else if (e.key === 'Escape') {
+      container.classList.remove('open');
+    }
+  });
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+  // Pet Select
+  initSearchableSelect('petSearchContainer', 'petSearchInput', 'petSearchMenu', 'petSearchResults', 'pet_id_select', 'selectedPetId');
+  
+  // Vaccine Select
+  initSearchableSelect('vaccineSearchContainer', 'vaccineSearchInput', 'vaccineSearchMenu', 'vaccineSearchResults', 'vaccine_id_select', 'selectedVaccineId');
+  
+  // Vet Select
+  initSearchableSelect('vetSearchContainer', 'vetSearchInput', 'vetSearchMenu', 'vetSearchResults', 'vet_id_select', 'selectedVetId');
+});
+
 function filterTable(inputId, tableId) {
   const filter = document.getElementById(inputId).value.toLowerCase();
   const rows = document.getElementById(tableId).querySelectorAll('tbody tr');

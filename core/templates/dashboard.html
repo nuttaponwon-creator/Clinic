@@ -11,9 +11,22 @@
   <div class="db-welcome-left">
     <h2>สวัสดีครับ/ค่ะ, {{ user_full_name }} 👋</h2>
     <p>ยินดีต้อนรับเข้าสู่ระบบจัดการคลินิกน้องนาวี่</p>
-    <div class="db-appt-pill">
-      <i class="fas fa-calendar-check"></i>
-      วันนี้มีนัดหมาย {{ total_appointments }} รายการที่กำลังจะมาถึง
+    <div style="display: flex; gap: 10px; margin-top: 15px;">
+      {% if is_vet %}
+      <div class="db-appt-pill" style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255,255,255,0.3);">
+        <i class="fas fa-user-md"></i>
+        ของคุณ: <strong>{{ my_appointments_count }}</strong> รายการ
+      </div>
+      <div class="db-appt-pill" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.1);">
+        <i class="fas fa-clinic-medical"></i>
+        ทั้งหมด: {{ total_appointments }} รายการ
+      </div>
+      {% else %}
+      <div class="db-appt-pill">
+        <i class="fas fa-calendar-check"></i>
+        วันนี้มีนัดหมาย {{ total_appointments }} รายการที่กำลังจะมาถึง
+      </div>
+      {% endif %}
     </div>
   </div>
   <div class="db-welcome-right">
@@ -130,8 +143,20 @@
       <div class="vet-duty-item">
         <div class="vet-duty-avatar">{{ vet.name|slice:":1"|upper }}</div>
         <div>
-          <div class="vet-duty-name">{{ vet.name }}</div>
-          <div class="vet-duty-spec">{{ vet.specialization|default:"สัตวแพทย์ทั่วไป" }}</div>
+          <div class="vet-duty-name">
+            {{ vet.name }}
+          </div>
+          <div style="display: flex; gap: 4px; margin-top: 2px;">
+            <a href="{% url 'appointment_list' %}" style="text-decoration:none;">
+              <span class="badge badge-purple" style="font-size: 8px; padding: 2px 5px; cursor: pointer;" title="นัดหมายวันนี้: {{ vet.appt_details|default:'ไม่มีนัดหมาย' }}">
+                <i class="fas fa-calendar-day"></i> {{ vet.today_appts }}
+              </span>
+            </a>
+            <span class="badge badge-teal" style="font-size: 8px; padding: 2px 5px;" title="สัตว์ในการดูแลทั้งหมด: {{ vet.pet_count }} ตัว">
+              <i class="fas fa-paw"></i> {{ vet.pet_count }}
+            </span>
+          </div>
+          <div class="vet-duty-spec" style="margin-top:2px;">{{ vet.specialization|default:"สัตวแพทย์ทั่วไป" }}</div>
         </div>
       </div>
       {% empty %}
@@ -143,20 +168,20 @@
 </div>
 
 <!-- ===== Bottom Row: Vaccines + Low Stock ===== -->
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;">
 
   <!-- Vaccines Due Soon -->
   <div class="data-card" style="margin-bottom:0;">
     <div class="data-card-header">
-      <h2><i class="fas fa-syringe"></i> วัคซีนใกล้ครบกำหนด</h2>
+      <h2 style="font-size:14px;"><i class="fas fa-syringe"></i> วัคซีนใกล้ครบกำหนด</h2>
     </div>
     <div class="table-responsive">
-      <table>
+      <table style="font-size: 12px;">
         <thead>
           <tr>
             <th>สัตว์เลี้ยง</th>
             <th>วัคซีน</th>
-            <th>ครบกำหนด</th>
+            <th>วันที่</th>
             <th>เหลือ</th>
           </tr>
         </thead>
@@ -164,18 +189,18 @@
           {% for vac in vaccine_due_soon %}
           <tr>
             <td><strong>{{ vac.pet_name }}</strong></td>
-            <td style="font-size:12px;">{{ vac.vaccine_name }}</td>
-            <td style="font-size:12px;">{{ vac.next_due_date|date:"d/m/Y" }}</td>
+            <td style="color: var(--text-secondary);">{{ vac.vaccine_name|truncatechars:15 }}</td>
+            <td>{{ vac.next_due_date|date:"d/m/y" }}</td>
             <td>
               {% if vac.days_until_due <= 7 %}
-                <span class="badge badge-danger">{{ vac.days_until_due }}วัน</span>
+                <span class="badge badge-danger" style="font-size: 10px; padding: 2px 6px;">{{ vac.days_until_due }}วัน</span>
               {% else %}
-                <span class="badge badge-warning">{{ vac.days_until_due }}วัน</span>
+                <span class="badge badge-warning" style="font-size: 10px; padding: 2px 6px;">{{ vac.days_until_due }}วัน</span>
               {% endif %}
             </td>
           </tr>
           {% empty %}
-          <tr><td colspan="4" class="empty-state"><p>ไม่มีวัคซีนใกล้ครบกำหนด ✅</p></td></tr>
+          <tr><td colspan="4" class="empty-state" style="padding: 15px;"><p style="font-size: 11px;">ไม่มีวัคซีนใกล้ครบกำหนด</p></td></tr>
           {% endfor %}
         </tbody>
       </table>
@@ -185,10 +210,10 @@
   <!-- Low Stock Medicines -->
   <div class="data-card" style="margin-bottom:0;">
     <div class="data-card-header">
-      <h2><i class="fas fa-pills"></i> ยาที่สต็อกต่ำ</h2>
+      <h2 style="font-size:14px;"><i class="fas fa-pills"></i> ยาที่สต็อกต่ำ</h2>
     </div>
     <div class="table-responsive">
-      <table>
+      <table style="font-size: 12px;">
         <thead>
           <tr>
             <th>ชื่อยา</th>
@@ -200,13 +225,44 @@
         <tbody>
           {% for med in low_stock_medicine %}
           <tr>
-            <td><strong style="font-size:13px;">{{ med.name }}</strong></td>
-            <td><span class="badge badge-danger">{{ med.stock_qty }}</span></td>
-            <td style="font-size:12px; color: var(--text-secondary);">{{ med.min_stock_qty }}</td>
-            <td><span class="badge badge-danger">-{{ med.shortage_qty }}</span></td>
+            <td><strong style="color: #4a5568;">{{ med.name }}</strong></td>
+            <td><span class="badge badge-danger" style="font-size:10px; padding: 2px 6px;">{{ med.stock_qty }}</span></td>
+            <td style="color: #a0aec0;">{{ med.min_stock_qty }}</td>
+            <td><span class="badge badge-danger" style="font-size:10px; padding: 2px 6px;">-{{ med.shortage_qty }}</span></td>
           </tr>
           {% empty %}
-          <tr><td colspan="4" class="empty-state"><p>สต็อกยาปกติทั้งหมด ✅</p></td></tr>
+          <tr><td colspan="4" class="empty-state" style="padding: 15px;"><p style="font-size: 11px;">สต็อกยาปกติทั้งหมด ✅</p></td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Low Stock Vaccines -->
+  <div class="data-card" style="margin-bottom:0; border-left: 3px solid #f9a8d4;">
+    <div class="data-card-header">
+      <h2 style="font-size:14px; color: #be185d;"><i class="fas fa-box-open"></i> วัคซีนที่สต็อกต่ำ</h2>
+    </div>
+    <div class="table-responsive">
+      <table style="font-size: 12px;">
+        <thead>
+          <tr>
+            <th>ชื่อวัคซีน</th>
+            <th>คงเหลือ</th>
+            <th>ขั้นต่ำ</th>
+            <th>ขาด</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for vac in low_stock_vaccine %}
+          <tr>
+            <td><strong style="color: #be185d;">{{ vac.name }}</strong></td>
+            <td><span class="badge badge-danger" style="background: #f472b6; font-size:10px; padding: 2px 6px;">{{ vac.stock_qty }}</span></td>
+            <td style="color: #a0aec0;">{{ vac.min_stock_qty }}</td>
+            <td><span class="badge badge-danger" style="background: #fb7185; font-size:10px; padding: 2px 6px;">-{{ vac.shortage_qty }}</span></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="empty-state" style="padding: 15px;"><p style="font-size: 11px;">สต็อกวัคซีนปกติทั้งหมด ✅</p></td></tr>
           {% endfor %}
         </tbody>
       </table>
